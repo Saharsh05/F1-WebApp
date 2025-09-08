@@ -36,3 +36,23 @@ async function fetchData(url, retries = 3) {
     }
     throw finalError
 }
+
+function normaliseTeams(apiArray){
+    if (!Array.isArray(apiArray)) throw new Error ("OpenF1 API did not return an array")
+
+    const output = [];
+    const recieved = new Set();
+
+    for (const item of apiArray) {
+        const name = item?.team_name;
+
+        if (!name) continue;
+        const team_name = String(name).trim();
+
+        if (!team_name || recieved.has(team_name.toLowerCase())) continue;
+        recieved.add(team_name.toLowerCase());
+        output.push({team_name});
+    }
+    
+    return output;
+}
