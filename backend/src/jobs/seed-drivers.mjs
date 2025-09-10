@@ -59,8 +59,6 @@ async function getAllDriversFromSessions(baseUrl, sessionKeys){
         console.log("Fetching:", url);
         const drivers = await fetchData(url);
         if (Array.isArray(drivers)) all.push(...drivers);
-        //adding as Error: 429 appears often
-        await sleep(250);
     }
     return all;
 }
