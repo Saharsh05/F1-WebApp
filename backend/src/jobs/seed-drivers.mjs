@@ -55,7 +55,7 @@ async function fetchData(url, retries = 3) {
 async function getAllDriversFromSessions(baseUrl, sessionKeys){
     const all = [];
     for (const key of sessionKeys){
-        const url = `${baseUrl}?session_key=${encodedURIcomponent(key)}`;
+        const url = `${baseUrl}?session_key=${encodeURIComponent(key)}`;
         console.log("Fetching:", url);
         const drivers = await fetchJson(url);
         if (Array.isArray(drivers)) all.push(...drivers);
