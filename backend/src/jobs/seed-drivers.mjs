@@ -59,6 +59,8 @@ async function getAllDriversFromSessions(baseUrl, sessionKeys){
         console.log("Fetching:", url);
         const drivers = await fetchData(url);
         if (Array.isArray(drivers)) all.push(...drivers);
+        //adding as Error: 429 appears often
+        await sleep(250);
     }
     return all;
 }
@@ -95,7 +97,7 @@ function normaliseDrivers(apiRows, teamMap){
         const duplicateChecker = `${driver_name.toLowerCase()} :: ${number ?? ""}`;
         if (recieved.has(duplicateChecker)) continue;
         recieved.add(duplicateChecker);
-        output.push({driver_name, number , team});
+        output.push({driver_name, driver_number: number ?? null , driver_team: team ?? null });
     }
     
     return output;
