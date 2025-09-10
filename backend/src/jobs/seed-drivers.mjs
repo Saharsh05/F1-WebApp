@@ -89,7 +89,7 @@ function normaliseDrivers(apiRows, teamMap){
 
         const rawTeam = row?.team_name;
         const teamKey = rawTeam ? String(rawTeam).trim().toLowerCase() : null;
-        const team = teamKey && teamMap.has(teamKey) ? teamMap.get(teamKey).get(teamKey) :null;
+        const team = teamKey && teamMap.has(teamKey) ? teamMap.get(teamKey) :null;
 
 
         const duplicateChecker = `${driver_name.toLowerCase()} :: ${number ?? ""}`;
