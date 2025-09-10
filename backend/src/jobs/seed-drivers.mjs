@@ -131,7 +131,7 @@ async function upsertDrivers(supabase, rows){
         const teamMap = await getTeamId(supabase);
 
         const raw_drivers = await getAllDriversFromSessions(DRIVERS_SOURCE_URL, DRIVERS_SESSION_KEYS);
-        const drivers = normaliseTeams(raw_drivers, teamMap);
+        const drivers = normaliseDrivers(raw_drivers, teamMap);
 
         if (!drivers.length) {
             console.warn("No drivers found after normalisation.")
