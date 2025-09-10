@@ -57,7 +57,7 @@ async function getAllDriversFromSessions(baseUrl, sessionKeys){
     for (const key of sessionKeys){
         const url = `${baseUrl}?session_key=${encodeURIComponent(key)}`;
         console.log("Fetching:", url);
-        const drivers = await fetchJson(url);
+        const drivers = await fetchData(url);
         if (Array.isArray(drivers)) all.push(...drivers);
     }
     return all;
