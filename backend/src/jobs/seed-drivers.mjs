@@ -12,7 +12,10 @@ dotenv.config({ path: path.join(__dirname, "..", "..", ".env")});
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const DRIVERS_SOURCE_URL = process.env.DRIVERS_SOURCE_URL;
-const DRIVERS_SESSION_KEYS = process.env.DRIVERS_SESSION_KEYS;
+const DRIVERS_SESSION_KEYS = (process.env.DRIVERS_SESSION_KEYS || "")
+    .split(",")
+    .map(x => x.trim())
+    .filter(Boolean);
 
 if (!SUPABASE_URL || !SERVICE_KEY) {
     throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in the .env file");
@@ -24,6 +27,10 @@ if (!DRIVERS_SOURCE_URL){
 
 if (!DRIVERS_SESSION_KEYS){
     throw new Error("Missing DRIVERS_SESSION_KEYS in the .env fille");
+}
+
+if(!DRIVERS_SESSION_KEYS.length){
+    throw new Error("Missing DRIVERS_SESSION_KEYS in the .env file (comma-separated list expected");
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {auth: {persistSession: false}})
@@ -44,6 +51,8 @@ async function fetchData(url, retries = 3) {
     }
     throw finalError
 }
+
+/*
 
 function normaliseDrivers(apiArray){
     if (!Array.isArray(apiArray)) throw new Error ("OpenF1 API did not return an array")
@@ -93,3 +102,4 @@ function normaliseDrivers(apiArray){
     console.error("Unhandled error:" , err);
     process.exit(1);
 });
+*/
