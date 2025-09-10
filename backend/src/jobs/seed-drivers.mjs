@@ -52,7 +52,7 @@ async function fetchData(url, retries = 3) {
     throw finalError
 }
 
-async function getAllDriversFromSessions(baseURl, sessionKeys){
+async function getAllDriversFromSessions(baseUrl, sessionKeys){
     const all = [];
     for (const key of sessionKeys){
         const url = `${baseUrl}?session_key=${encodedURIcomponent(key)}`;
