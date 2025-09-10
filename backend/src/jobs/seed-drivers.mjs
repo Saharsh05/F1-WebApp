@@ -52,49 +52,69 @@ async function fetchData(url, retries = 3) {
     throw finalError
 }
 
-/*
+async function getAllDriversFromSessions(baseURl, sessionKeys){
+    const all = [];
+    for (const key of sessionKeys){
+        const url = `${baseUrl}?session_key=${encodedURIcomponent(key)}`;
+        console.log("Fetching:", url);
+        const drivers = await fetchJson(url);
+        if (Array.isArray(drivers)) all.push(...drivers);
+    }
+    return all;
+}
 
-function normaliseDrivers(apiArray){
-    if (!Array.isArray(apiArray)) throw new Error ("OpenF1 API did not return an array")
+async function getTeamId(supabase){
+    const {data, error} = await supabase.from("teams").select("id, team_name");
+    if (error) throw error;
+    const map = new Map();
+    for (const i of data || []) {
+        if (!i.team_name) continue;
+        map.set(String(i.team_name).trim().toLowerCase(), i.id);
+    }
+    return map;
+}
+
+function normaliseDrivers(apiRows, teamMap){
+    //if (!Array.isArray(apiArray)) throw new Error ("OpenF1 API did not return an array")
 
     const output = [];
     const recieved = new Set();
 
-    for (const item of apiArray) {
-        const name = item?.full_name;
-
+    for (const row of apiRows) {
+        const name = row?.full_name;
         if (!name) continue;
         const driver_name = String(name).trim();
 
-        if (!driver_name || recieved.has(driver_name.toLowerCase())) continue;
-        recieved.add(driver_name.toLowerCase());
-        output.push({driver_name});
+        const number = row?.driver_number;
+
+        const rawTeam = row?.team_name;
+        const teamKey = rawTeam ? String(rawTeam).trim().toLowerCase() : null;
+        const team = teamKey && teamMap.has(teamKey) ? teamMap.get(teamKey).get(teamKey) :null;
+
+
+        const duplicateChecker = `${driver_name.toLowerCase()} :: ${number ?? ""}`;
+        if (recieved.has(duplicateChecker)) continue;
+        recieved.add(duplicateChecker);
+        output.push({driver_name, number , team});
     }
     
     return output;
 }
 
-(async () => {
-    console.log("Fetching drivers from: ", TEAMS_SOURCE_URL);
-    const raw_teams = await fetchData(TEAMS_SOURCE_URL);
-    const teams = normaliseTeams(raw_teams);
 
-    if (!teams.length) {
-        console.warn("No teams found")
-        process.exit(0);
-    }
+async function upsertDrivers(supabase, rows){
+    if (!rows.length) return {count : 0};
 
-    console.log(`Upserting ${teams.length} teams`);
+    //console.log(`Upserting ${teams.length} teams`);
     const { data, error } = await supabase
-    .from("teams")
-    .upsert(teams, { onConflict: "team_name"})
-    .select("id, team_name");
+    .from("drivers")
+    .upsert(rows, { onConflict: "driver_name"})
+    .select("driver_name");
 
-    if (error) {
-        console.error("Seeding failed: ", error);
-        process.exit(1);
-    }
-
+    if (error)  throw error;
+    return {count: data?.length ?? 0};
+}
+/*
     console.log(`Seeded/updated ${data.length} teams.`)
     for(const row of data) console.log(`${row.id} ${row.team_name}`);
     process.exit(0);
@@ -103,3 +123,25 @@ function normaliseDrivers(apiArray){
     process.exit(1);
 });
 */
+
+
+(async () => {
+    try{
+        console.log("Session keys: ", DRIVERS_SESSION_KEYS.join(","));
+        const teamMap = await getTeamId(supabase);
+
+        const raw_drivers = await getAllDriversFromSessions(DRIVERS_SOURCE_URL, DRIVERS_SESSION_KEYS);
+        const drivers = normaliseTeams(raw_drivers, teamMap);
+
+        if (!drivers.length) {
+            console.warn("No drivers found after normalisation.")
+            process.exit(0);
+        }
+        const {count} = await upsertDrivers(supabase, drivers);
+        console.log(`Upserted drivers: ${count}`);
+    } catch (err) {
+        console.error("Seeding drivers failed: ", err);
+        process.exit(1);
+    }
+})();
+    
