@@ -83,7 +83,8 @@ async function getAllSessions(baseUrl, year){
         if (Array.isArray(sessions)) {
             for (const s of sessions){
                 const x = (s.session_type ?? s.type ?? s.session_name ?? s.name ?? "").toString().toLowerCase();
-                if (x.includes("race")) all.push(s);
+                all.push(s);
+                //if (x.includes( "race", "practice", "qualifying")) all.push(s);
             
             }
         }
@@ -124,6 +125,11 @@ async function normaliseRaces(sessions, driversMap){
     for(const i of sessions){
         const session_key = getField(i, "session_key");
         if (!session_key) continue;
+
+        if(session_key == 9683 || session_key == 9684 || session_key == 9685){
+            console.log("Skipping session_key:" , session_key);
+            continue;
+        }
 
         const year = getField(i, "year");
         const raceType = getField(i, "session_name");
