@@ -113,16 +113,30 @@ async function getWinnerNumber(session_key){
     const results = await fetchData(url);
     if (Array.isArray(results) || results.length === 0) return null;
 
-    const p1 = raceWin.find((r) => Number(r.position) === 1) || raceWin[0];
-    const num = p1?.driver_number;
+    const p1 = raceWin.find((r) => Number(r.position) === 1);
+    const num = p1?.driver_number ?? null;
     return num = null ? null : Number(num);
 }
 
-async function normaliseRaces(sessions){
+//drivers by number map
+async function makeDriversByNumberMap(){
+    const { data, error } = await supabase
+    .from("drivers")
+    .select("driver_number, driver_id, driver_team");
+    if (error) throw error;
+
+    const drivers = new Map();
+    for (const r of data || []) {
+        if (r.driver_number == null) continue;
+        drivers.set(Number(r.driver_number), {driver_id: r.driver_id, team_id: r.driver_team ?? null});
+    }
+    return drivers;
+}
+
+async function normaliseRaces(sessions, driversMap){
     const output = [];
 
     for(const i of sessions){
-
         const session_key = getField(i, "session_key");
         if (!session_key) continue;
 
@@ -132,21 +146,23 @@ async function normaliseRaces(sessions){
         const date = getField(i, "date_start");
 
         const winner_number = await getWinnerNumber(session_key);
-        let winner_driver_id = null;
-        let winner_team_id = null;
+        if (winner_number == null){
+            console.warn(`Skipping session ${session_key}: no P1 driver_number`);
+            continue;
+        }
 
-        if (winner_number != null){
-            const first = await getWinner(number);
-            winner_driver_id = first.winner_driver_id;
-            winner_team_id = first.winner_team_id;
+        const mapEntry = driversMap.get(winner_number);
+        if(!mapEntry || !mapEntry.driver_id){
+            console.warn(`Skipping session ${session_key}: driver_number ${winner_number} not in DB`)
+            continue;
         }
 
         const row = {
             session_key: session_key,
             meeting_key: meeting_key ?? null,
             season: year ?? null,
-            first_place_driver: winner_driver_id,
-            first_place_team: winner_team_id,
+            first_place_driver: mapEntry.driver_id,
+            first_place_team: mapEntry.team_id ?? null,
             race_type: raceType ?? null,
             date: date ?? null
         };
@@ -204,7 +220,7 @@ async function getDriverId(supabase){
 async function upsertRaces(rows){
     if (!rows.length) return {count : 0};
 
-    console.log(`Upserting ${teams.length} teams`);
+    console.log(`Upserting ${rows.length} races`);
     const { data, error } = await supabase
     .from("races")
     .upsert(rows, { onConflict: "session_key"})
