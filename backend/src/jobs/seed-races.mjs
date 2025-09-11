@@ -64,22 +64,6 @@ function getField(obj, ...keys){
     return null;
 }
 
-//fetches driver_id and team when given driver number
-async function getWinner(number){
-    if (number == null) return {winner_driver_id: null, winner_team_id: null};
-
-    const {data, error} = await supabase.from("drivers").select("driver_id, driver_team").eq("driver_number", number).maybeSingle();
-    if (error) throw error;
-
-    if(!data){
-        return {winner_driver_id:null, winner_team_id:null};
-    }
-    return {
-        winner_driver_id: data.driver_id ?? null,
-        winner_team_id: data.driver_team ?? null,
-    };
-}
-
   /*  const map = new Map();
     for (const i of data || []) {
         if (!i.team_name) continue;
