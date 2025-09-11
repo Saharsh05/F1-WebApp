@@ -57,26 +57,127 @@ async function fetchData(url, retries = 3) {
     throw finalError
 }
 
-async function getAllRaces(baseUrl, year){
+function getField(obj, ...keys){
+    for (const k of keys){
+        if (obj && obj[k] != null) return obj[k];
+    }
+    return null;
+}
+
+//fetches driver_id and team when given driver number
+async function getWinner(number){
+    if (number == null) return {winner_driver_id: null, winner_team_id: null};
+
+    const {data, error} = await supabase.from("drivers").select("driver_id, driver_team")
+        .eq("driver_number", number)
+        .maybeSingle();
+    if (error) throw error;
+
+    return {
+        winner_driver_id: data.driver_id ?? null,
+        winner_team_id: data.driver_team ?? null,
+    };
+}
+
+  /*  const map = new Map();
+    for (const i of data || []) {
+        if (!i.team_name) continue;
+        map.set(String(i.team_name).trim().toLowerCase(), i.id);
+    }
+    return map;
+} */
+
+//all sessions in a given year (all races since 2023)
+
+async function getAllSessions(baseUrl, year){
     const all = [];
-    for (const key of year){
-        const url = `${baseUrl}?year=${encodeURIComponent(key)}`;
-        console.log("Fetching:", url);
-        const races = await fetchData(url);
-        if (Array.isArray(races)) all.push(...races);
+    for (const i of year){
+        const url = `${baseUrl}?year=${encodeURIComponent(i)}`;
+        console.log("Fetching sessions:", url);
+        const sessions = await fetchData(url);
+        if (Array.isArray(sessions)) {
+            for (const s of sessions){
+                const x = (s.session_type || s.type || s.name || "").toString().toLowerCase();
+                if (x.includes("race")) all.push(s);
+            
+            }
+        }
     }
     return all;
 }
 
-async function getRaceWin(baseUrl, sessionKey){
-    const all = [];
-    const url = `${baseUrl}?session_key=${encodeURIComponent(sessionKey)}`;
+//find P1 placer
+async function getWinnerNumber(session_key){
+    const url = `${RACE_RESULTS_URL}?session_key=${encodeURIComponent(session_key)}`;
     console.log("Fetching:", url);
-    const raceWin = await fetchData(url);
-    if (Array.isArray(raceWin)) all.push(...raceWin);
-    return all;
+    const results = await fetchData(url);
+    if (Array.isArray(results) || results.length === 0) return null;
+
+    const p1 = raceWin.find((r) => Number(r.position) === 1) || raceWin[0];
+    const num = p1?.driver_number;
+    return num = null ? null : Number(num);
 }
 
+async function normaliseRaces(sessions){
+    const output = [];
+
+    for(const i of sessions){
+
+        const session_key = getField(i, "session_key");
+        if (!session_key) continue;
+
+        const year = getField(i, "year");
+        const raceType = getField(i, "session_name");
+        const meeting_key = getField(i, "meeting_key");
+        const date = getField(i, "date_start");
+
+        const winner_number = await getWinnerNumber(session_key);
+        let winner_driver_id = null;
+        let winner_team_id = null;
+
+        if (winner_number != null){
+            const first = await getWinner(number);
+            winner_driver_id = first.winner_driver_id;
+            winner_team_id = first.winner_team_id;
+        }
+
+        const row = {
+            session_key: session_key,
+            meeting_key: meeting_key ?? null,
+            season: year ?? null,
+            first_place_driver: winner_driver_id,
+            first_place_team: winner_team_id,
+            race_type: raceType ?? null,
+            date: date ?? null
+        };
+
+        //trimming
+        for (const k of Object.keys(row)){
+            if (typeof row[k] === "string") row[k] = row[k].trim();
+        }
+
+        output.push(row);
+    }
+
+    return output;
+
+/*
+        const rawTeam = row?.team_name;
+        const teamKey = rawTeam ? String(rawTeam).trim().toLowerCase() : null;
+        const team = teamKey && teamMap.has(teamKey) ? teamMap.get(teamKey) :null;
+
+
+        const duplicateChecker = `${driver_name.toLowerCase()} :: ${number ?? ""}`;
+        if (recieved.has(duplicateChecker)) continue;
+        recieved.add(duplicateChecker);
+        output.push({driver_name, driver_number: number ?? null , driver_team: team ?? null });
+    }
+    
+    return output;
+    */
+}
+
+/*
 async function getTeamId(supabase){
     const {data, error} = await supabase.from("teams").select("id, team_name");
     if (error) throw error;
@@ -98,53 +199,16 @@ async function getDriverId(supabase){
     }
     return map;
 }
-
-function normaliseRaces(apiRows,raceWinRows, teamMap, driversMap){
-    //if (!Array.isArray(apiArray)) throw new Error ("OpenF1 API did not return an array")
-
-    const output = [];
-    const recieved = new Set();
-
-    for (const row of apiRows) {
-        const session = row?.session_key;
-        if (!session_key) continue;
-       // const session_key = String(session).trim();
-
-        const meeting_key = row?.meeting_key;
-
-        const season = row?.year;
-    
-    for(const row of raceWinRows){
-        const rawDriver = row?.driver_number;
-        const driver = rawDriver && driversMap.has(rawDriver) ? driversMap.get(rawDriver) : null;
-        
-
-    }
-
-/*
-        const rawTeam = row?.team_name;
-        const teamKey = rawTeam ? String(rawTeam).trim().toLowerCase() : null;
-        const team = teamKey && teamMap.has(teamKey) ? teamMap.get(teamKey) :null;
 */
 
-        const duplicateChecker = `${driver_name.toLowerCase()} :: ${number ?? ""}`;
-        if (recieved.has(duplicateChecker)) continue;
-        recieved.add(duplicateChecker);
-        output.push({driver_name, driver_number: number ?? null , driver_team: team ?? null });
-    }
-    
-    return output;
-}
-
-
-async function upsertDrivers(supabase, rows){
+async function upsertRaces(rows){
     if (!rows.length) return {count : 0};
 
-    //console.log(`Upserting ${teams.length} teams`);
+    console.log(`Upserting ${teams.length} teams`);
     const { data, error } = await supabase
-    .from("drivers")
-    .upsert(rows, { onConflict: "driver_name"})
-    .select("driver_name");
+    .from("races")
+    .upsert(rows, { onConflict: "session_key"})
+    .select("session_key");
 
     if (error)  throw error;
     return {count: data?.length ?? 0};
@@ -157,26 +221,30 @@ async function upsertDrivers(supabase, rows){
     console.error("Unhandled error:" , err);
     process.exit(1);
 });
+
 */
-
-
 (async () => {
     try{
-        console.log("Session keys: ", DRIVERS_SESSION_KEYS.join(","));
-        const teamMap = await getTeamId(supabase);
+        console.log("Years: ", RACES_YEARS.join(","));
+        const raw_races = await getAllSessions(RACES_SOURCE_URL, RACES_YEARS);
 
-        const raw_drivers = await getAllDriversFromSessions(DRIVERS_SOURCE_URL, DRIVERS_SESSION_KEYS);
-        const drivers = normaliseDrivers(raw_drivers, teamMap);
-
-        if (!drivers.length) {
-            console.warn("No drivers found after normalisation.")
+        if (!raw_races.length){
+            console.warn("No race sessions found for the requested years.");
             process.exit(0);
         }
-        const {count} = await upsertDrivers(supabase, drivers);
-        console.log(`Upserted drivers: ${count}`);
+
+        const rows = await normaliseRaces(raw_races)
+        const filtered = rows.filter((r) => r.session_key);
+
+        if (!filtered.length) {
+            console.warn("No rows found after normalisation.")
+            process.exit(0);
+        }
+        const {count} = await upsertRaces(filtered);
+        console.log(`Upserted races: ${count}`);
+        process.exit(0);
     } catch (err) {
-        console.error("Seeding drivers failed: ", err);
+        console.error("Seeding races failed: ", err);
         process.exit(1);
     }
 })();
-    
