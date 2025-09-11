@@ -68,11 +68,12 @@ function getField(obj, ...keys){
 async function getWinner(number){
     if (number == null) return {winner_driver_id: null, winner_team_id: null};
 
-    const {data, error} = await supabase.from("drivers").select("driver_id, driver_team")
-        .eq("driver_number", number)
-        .maybeSingle();
+    const {data, error} = await supabase.from("drivers").select("driver_id, driver_team").eq("driver_number", number).maybeSingle();
     if (error) throw error;
 
+    if(!data){
+        return {winner_driver_id:null, winner_team_id:null};
+    }
     return {
         winner_driver_id: data.driver_id ?? null,
         winner_team_id: data.driver_team ?? null,
@@ -111,11 +112,11 @@ async function getWinnerNumber(session_key){
     const url = `${RACE_RESULTS_URL}?session_key=${encodeURIComponent(session_key)}`;
     console.log("Fetching:", url);
     const results = await fetchData(url);
-    if (Array.isArray(results) || results.length === 0) return null;
+    if (!Array.isArray(results) || results.length === 0) return null;
 
-    const p1 = results.find((r) => Number(r.position) === 1);
+    const p1 = results.find(r => Number(r.position) === 1);
     const num = p1?.driver_number ?? null;
-    return num = null ? null : Number(num);
+    return num == null ? null : Number(num);
 }
 
 //drivers by number map
