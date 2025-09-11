@@ -27,7 +27,7 @@ if (!RACES_SOURCE_URL){
 }
 
 if (!RACES_YEARS){
-    throw new Error("Missing RACES_YEARS in the .env fille");
+    throw new Error("Missing RACES_YEARS in the .env file");
 }
 
 if(!RACES_YEARS.length){
@@ -35,7 +35,7 @@ if(!RACES_YEARS.length){
 }
 
 if (!RACE_RESULTS_URL){
-    throw new Error("Missing RACE_RESULTS_URL in the .env fille");
+    throw new Error("Missing RACE_RESULTS_URL in the .env file");
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {auth: {persistSession: false}})
@@ -97,7 +97,7 @@ async function getAllSessions(baseUrl, year){
         const sessions = await fetchData(url);
         if (Array.isArray(sessions)) {
             for (const s of sessions){
-                const x = (s.session_type || s.type || s.name || "").toString().toLowerCase();
+                const x = (s.session_type ?? s.type ?? s.session_name ?? s.name ?? "").toString().toLowerCase();
                 if (x.includes("race")) all.push(s);
             
             }
@@ -113,7 +113,7 @@ async function getWinnerNumber(session_key){
     const results = await fetchData(url);
     if (Array.isArray(results) || results.length === 0) return null;
 
-    const p1 = raceWin.find((r) => Number(r.position) === 1);
+    const p1 = results.find((r) => Number(r.position) === 1);
     const num = p1?.driver_number ?? null;
     return num = null ? null : Number(num);
 }
@@ -249,7 +249,8 @@ async function upsertRaces(rows){
             process.exit(0);
         }
 
-        const rows = await normaliseRaces(raw_races)
+        const driversMap = await makeDriversByNumberMap();
+        const rows = await normaliseRaces(raw_races, driversMap)
         const filtered = rows.filter((r) => r.session_key);
 
         if (!filtered.length) {
