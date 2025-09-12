@@ -70,6 +70,11 @@ web_modules/
 .env.*
 !.env.example
 
+#google client files
+client_secret.json
+**/client_secret.json
+*.client_secret.json
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
