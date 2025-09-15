@@ -32,15 +32,16 @@ function buildQuery(session, meeting) {
     const q2 = [year, country, "Grand Prix highlights"].join(" ").trim();
     const q3 = [year, circuit, "F1 highlights"].join(" ").trim();
     const q4 = `${year} F1 race highlights`;
-    return [...new Set([q1, q2, q3, q4].filter(Boolean))];
+    const q5 = `${year} Forumla 1 highlights`;
+    return [...new Set([q1, q2, q3, q4, q5].filter(Boolean))];
  }
 
 function publishedWindow(date) {
     // Narrow search to a 14-day window around the race start to avoid old compilations
     try {
         const start = new Date(date);
-        const from = new Date(start); from.setDate(from.getDate() - 7);
-        const to = new Date(start);   to.setDate(to.getDate() + 7);
+        const from = new Date(start); from.setDate(from.getDate() - 14);
+        const to = new Date(start);   to.setDate(to.getDate() + 21);
         return { publishedAfter: from.toISOString(), publishedBefore: to.toISOString() };
     } catch { return {}; }
 }
