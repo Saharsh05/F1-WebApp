@@ -1,4 +1,3 @@
-//from the official YouTube Data API documentation
 var fs = require('fs');
 var readline = require('readline');
 var {google} = require('googleapis');
