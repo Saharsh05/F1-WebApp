@@ -29,7 +29,7 @@ function buildQuery(session, meeting) {
     const name = meeting.meeting_name || "";
     const country = meeting.country_name || "";
     const circuit = meeting.circuit_short_name || "";
-    const q0 = `"Race Highlights | ${year} ${name}`.trim();
+    const q0 = `Race Highlights | ${year} ${name}`.trim();
     const q1 = [year, name, "highlights"].join(" ").trim();
     const q2 = [year, country, "Grand Prix highlights"].join(" ").trim();
     const q3 = [year, circuit, "F1 highlights"].join(" ").trim();
@@ -51,18 +51,20 @@ function publishedWindow(date) {
 function pickBestVideo(items, query) {
     // prefer titles that contain "highlights" and the year/location terms,
     // and (optionally) the official channel name hint.
+    const queryStr = Array.isArray(query) ? query.join (" ") : String(query || "");
+
     const request = {
       highlights: /highlight/i,
-      year: (query.match(/\b(19|20)\d{2}\b/) || [])[0],
+      year: (queryStr.match(/\b(19|20)\d{2}\b/) || [])[0],
     };
-    const terms = query.toLowerCase().split(/\s+/).filter(x => x.length > 2 && x !== "grand" && x !== "prix")
+    const terms = queryStr.toLowerCase().split(/\s+/).filter(x => x.length > 2 && x !== "grand" && x !== "prix")
 
     //temporary to check if api is returning videos
-    console.log("search results for" , v);
+    /*console.log("search results for" , query);
     (data.items || []).forEach(it => {
         console.log("-", it.snippet?.title, "(", it.snippet?.channelTitle, ")");
     });
-  
+  */
     let best = null, bestScore = -1;
     for (const it of items) {
       const { title = "", channelTitle = "" } = it.snippet || {};
