@@ -10,7 +10,7 @@ dotenv.config({ path:path.join(__dirname, "..", "..", ".env")});
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const YT_KEY = process.env.YOUTUBE_API_KEY
-const YOUTUBE_CHANNEL_HINT = (process.env.YOUTUBE_CHANNEL_HINT || "").toLowerCase();
+const CHANNEL_HINT = (process.env.YOUTUBE_CHANNEL_HINT || "").toLowerCase();
 const LIMIT = parseInt(process.env.LIMIT_SESSIONS || "10", 10);
 
 if(!SUPABASE_URL || !SERVICE_KEY) throw new Error("Missing Supabase env vars");
@@ -29,12 +29,13 @@ function buildQuery(session, meeting) {
     const name = meeting.meeting_name || "";
     const country = meeting.country_name || "";
     const circuit = meeting.circuit_short_name || "";
+    const q0 = `"Race Highlights | ${year} ${name}`.trim();
     const q1 = [year, name, "highlights"].join(" ").trim();
     const q2 = [year, country, "Grand Prix highlights"].join(" ").trim();
     const q3 = [year, circuit, "F1 highlights"].join(" ").trim();
-    const q4 = `${year} F1 race highlights`;
-    const q5 = `${year} Forumla 1 highlights`;
-    return [...new Set([q1, q2, q3, q4, q5].filter(Boolean))];
+   // const q4 = `${year} F1 race highlights`;
+    //const q5 = `${year} Forumla 1 highlights`;
+    return [...new Set([q0].filter(Boolean))];
  }
 
 function publishedWindow(date) {
@@ -47,14 +48,14 @@ function publishedWindow(date) {
     } catch { return {}; }
 }
 
-function pickBestVideo(items, v) {
+function pickBestVideo(items, query) {
     // prefer titles that contain "highlights" and the year/location terms,
     // and (optionally) the official channel name hint.
     const request = {
       highlights: /highlight/i,
-      year: (v.match(/\b(19|20)\d{2}\b/) || [])[0],
+      year: (query.match(/\b(19|20)\d{2}\b/) || [])[0],
     };
-    const terms = v.toLowerCase().split(/\s+/).filter(x => x.length > 2 && x !== "grand" && x !== "prix")
+    const terms = query.toLowerCase().split(/\s+/).filter(x => x.length > 2 && x !== "grand" && x !== "prix")
 
     //temporary to check if api is returning videos
     console.log("search results for" , v);
@@ -64,9 +65,9 @@ function pickBestVideo(items, v) {
   
     let best = null, bestScore = -1;
     for (const it of items) {
-      const { title, channelTitle } = it.snippet || {};
-      const t = (title || "").toLowerCase();
-      const c = (channelTitle || "").toLowerCase();
+      const { title = "", channelTitle = "" } = it.snippet || {};
+      const t = (title).toLowerCase();
+      const c = (channelTitle).toLowerCase();
   
       let score = 0;
       if (request.highlights.test(t)) score += 5
@@ -100,19 +101,19 @@ async function searchYouTube(queries, window) {
   
       const results = await fetch(url);
       if (!results.ok) { 
-        const body = await results.text();
-        console.error("YouTube error", await results.text()); continue; }
+        const body = await results.body();
+        console.error("YouTube error", body);
         if (results.status === 403 && /quota/i.test(body)) {
             console.error("Stopping: YouTube API quota exceeded.");
-            return;
+            return null;
         }
         continue;
-    processed++;
+      }
 
-      const data = await results.json();
-  
-      const pick = pickBestVideo(data.items || [], v);
-      if (pick) return pick;
+    const data = await results.json();
+
+    const pick = pickBestVideo(data.items || [], queries);
+    if (pick) return pick;
     }
     return null;
 }
@@ -173,7 +174,8 @@ async function main (){
             .upsert({ session_key: s.session_key, youtube_video_id: videoId }, { onConflict: "session_key" });
 
         if (upsertErr) { console.error(upsertErr); failed++; }
-        else { inserted++; console.log(`Saved ${queries} -> ${videoId}`); }
+        else { inserted++; console.log(`Saved ${queries[0]} -> ${videoId}`); }
+        processed++;
     }
 
     console.log({ inserted, skipped, failed });
