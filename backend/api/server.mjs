@@ -35,5 +35,42 @@ app.get("/v1/races", async (request, result) => {
     result.json({ data, pagination: { limit: Number(limit), offset: Number(offset) } });
 });
 
+app.get("/v1/drivers", async (request, result) => {
+    const { driver_team, limit = 50, offset = 0} = request.query;
+    const driver_id = request.query.driver_id;
+    const driver_number = request.query.driver_number;
+    const driver_name = request.query.driver_name?.toString();
+    const teamIdList = request.query.team_id?.toString();
+    
+    let query = supabase.from("api_v1_drivers").select("*").order("driver_id" , { ascending: true})
+        .range(Number(offset), Number(offset) + Number(limit) -1);
+
+    if (driver_id !== undefined) query = query.eq("driver_id", Number(driver_id));
+    if (driver_number !== undefined) query = query.eq("driver_number", Number(driver_number))
+    if (driver_team !== undefined) query = query.eq("driver_team", String(driver_team))
+
+    if (driver_id) {
+        const ids = driver_id.split(",").map(n => Number(n)).filter(Number.isFinite);
+        query = ids.length > 1 ? query.in("driver_id", ids) : query.eq("driver_id", ids[0]);
+        }
+    if (driver_number) {
+        const nums = driver_Number.split(",").map(n => Number(n)).filter(Number.isFinite);
+        query = nums.length > 1 ? query.in("driver_number", nums) : query.eq("driver_number", nums[0]);
+    }
+    if (teamIdList) {
+        const teamIds = teamIdList.split(",").map(n => Number(n)).filter(Number.isFinite);
+        query = teamIds.length > 1 ? query.in("team_id", teamIds) : query.eq("team_id", teamIds[0]);
+    }
+
+    if (driver_name) {
+    query = query.or(`full_name.ilike.%${driver_name}%,last_name.ilike.%${driver_name}%`);
+    }
+
+    const { data, error } = await query;
+    if (error) return sendError(result, 500, "Database error", error.message);
+    result.json({ data, pagination: { limit: Number(limit), offset: Number(offset) } });
+});
+
+
 const port = process.env.PORT || 8787;
 app.listen(port, () => console.log(`API listening on http://localhost:${port}`));
