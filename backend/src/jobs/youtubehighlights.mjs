@@ -11,6 +11,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const YT_KEY = process.env.YOUTUBE_API_KEY
 const YOUTUBE_CHANNEL_HINT = (process.env.YOUTUBE_CHANNEL_HINT || "").toLowerCase();
+const LIMIT = parseInt(process.env.LIMIT_SESSIONS || "10", 10);
 
 if(!SUPABASE_URL || !SERVICE_KEY) throw new Error("Missing Supabase env vars");
 if(!YT_KEY) throw new Error("Missing YOUTUBE_API_KEY");
@@ -54,6 +55,12 @@ function pickBestVideo(items, v) {
       year: (v.match(/\b(19|20)\d{2}\b/) || [])[0],
     };
     const terms = v.toLowerCase().split(/\s+/).filter(x => x.length > 2 && x !== "grand" && x !== "prix")
+
+    //temporary to check if api is returning videos
+    console.log("search results for" , v);
+    (data.items || []).forEach(it => {
+        console.log("-", it.snippet?.title, "(", it.snippet?.channelTitle, ")");
+    });
   
     let best = null, bestScore = -1;
     for (const it of items) {
@@ -83,7 +90,7 @@ async function searchYouTube(queries, window) {
       const url = new URL(base);
       url.searchParams.set("key", YT_KEY);
       url.searchParams.set("part", "snippet");
-      url.searchParams.set("maxResults", "10")
+      url.searchParams.set("maxResults", "5")
       url.searchParams.set("type", "video");
       url.searchParams.set("order", "relevance");
       url.searchParams.set("safeSearch", "strict")
@@ -92,14 +99,24 @@ async function searchYouTube(queries, window) {
       if (window.publishedBefore) url.searchParams.set("publishedBefore", window.publishedBefore);
   
       const results = await fetch(url);
-      if (!results.ok) { console.error("YouTube error", await results.text()); continue; }
+      if (!results.ok) { 
+        const body = await results.text();
+        console.error("YouTube error", await results.text()); continue; }
+        if (results.status === 403 && /quota/i.test(body)) {
+            console.error("Stopping: YouTube API quota exceeded.");
+            return;
+        }
+        continue;
+    processed++;
+
       const data = await results.json();
   
       const pick = pickBestVideo(data.items || [], v);
       if (pick) return pick;
     }
     return null;
-  }
+}
+
 
  // fetch meeting metadata from OpenF1 using meeting_key
 async function getLocation(meeting_key) {
@@ -134,31 +151,32 @@ async function main (){
     const { data: existingHighlights } = await supabase.from("race_highlights").select("session_key");
     const done = new Set((existingHighlights || []).map(r => r.session_key));
   
-    let inserted = 0, skipped = 0, failed = 0;
+    let processed = 0, inserted = 0, skipped = 0, failed = 0;
   
     for (const r of races) {
-      if (done.has(r.session_key)) { skipped++; continue; }
+        if (processed >= LIMIT) { console.log("Hit LIMIT"); break;}
+        if (done.has(r.session_key)) { skipped++; continue; }
   
-      const location = await getLocation(r.meeting_key);
-      const queries = buildQuery(r, location);  // e.g., "2025 Bahrain Grand Prix highlights"   
-      const window = publishedWindow(r.date);
-      const videoId = await searchYouTube(queries, window)
-  
-      if (!videoId) {
-        console.log(`No good match: ${queries}`);
-        failed++;
-        continue;
-      }    
-      
-      const { error: upsertErr } = await supabase
-        .from("race_highlights")
-        .upsert({ session_key: s.session_key, youtube_video_id: videoId }, { onConflict: "session_key" });
+        const location = await getLocation(r.meeting_key);
+        const queries = buildQuery(r, location);  // e.g., "2025 Bahrain Grand Prix highlights"   
+        const window = publishedWindow(r.date);
+        const videoId = await searchYouTube(queries, window)
+    
+        if (!videoId) {
+            console.log(`No good match: ${queries}`);
+            failed++;
+            continue;
+        }    
+        
+        const { error: upsertErr } = await supabase
+            .from("race_highlights")
+            .upsert({ session_key: s.session_key, youtube_video_id: videoId }, { onConflict: "session_key" });
 
-    if (upsertErr) { console.error(upsertErr); failed++; }
-    else { inserted++; console.log(`Saved ${queries} -> ${videoId}`); }
-  }
+        if (upsertErr) { console.error(upsertErr); failed++; }
+        else { inserted++; console.log(`Saved ${queries} -> ${videoId}`); }
+    }
 
-  console.log({ inserted, skipped, failed });
+    console.log({ inserted, skipped, failed });
 }
   
 main().catch(err => { console.error(err); process.exit(1); });
