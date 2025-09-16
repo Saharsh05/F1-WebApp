@@ -24,7 +24,7 @@ app.get("/v1/races", async (request, result) => {
 
     if (season !== undefined) query = query.eq("season", Number(season));
     if (race_type) {
-        const types = Strong(race_type).split(",").map(s => s.trim()).filter(Boolean);
+        const types = String(race_type).split(",").map(s => s.trim()).filter(Boolean);
         query = types.length === 1
             ? query.eq("race_type", types[0])
             : query.in("race_type" , types);
