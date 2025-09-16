@@ -29,13 +29,14 @@ function buildQuery(session, meeting) {
     const name = meeting.meeting_name || "";
     const country = meeting.country_name || "";
     const circuit = meeting.circuit_short_name || "";
-    const q0 = `Race Highlights | ${year} ${name}`.trim();
-    const q1 = [year, name, "highlights"].join(" ").trim();
-    const q2 = [year, country, "Grand Prix highlights"].join(" ").trim();
-    const q3 = [year, circuit, "F1 highlights"].join(" ").trim();
-   // const q4 = `${year} F1 race highlights`;
-    //const q5 = `${year} Forumla 1 highlights`;
-    return [...new Set([q0].filter(Boolean))];
+    const q0 = `"Race Highlights |" ${year} ${name}`.trim();
+    const q1 = `"Race Highlights" ${year} ${country}`.trim();
+    const q2 = `"Race Highlights" ${year} ${circuit}`.trim();
+    const q3 = `${year} ${name} highlights`;
+    const q4 = `${year} ${country} Grand Prix highlights`;
+    const q5 = `${year} F1 race highlights`;
+    const q6 = `${year} Formula 1 highlights`;
+    return [...new Set([q0, q1, q2, q3, q4, q5, q6].filter(Boolean))];
  }
 
 function publishedWindow(date) {
@@ -89,7 +90,7 @@ function pickBestVideo(items, query) {
 async function searchYouTube(queries, window) {
     // try 3 query variants from the bundle
     const base = "https://www.googleapis.com/youtube/v3/search";
-    for (const v of queries) {
+    for (const q of queries) {
       const url = new URL(base);
       url.searchParams.set("key", YT_KEY);
       url.searchParams.set("part", "snippet");
@@ -97,13 +98,13 @@ async function searchYouTube(queries, window) {
       url.searchParams.set("type", "video");
       url.searchParams.set("order", "relevance");
       url.searchParams.set("safeSearch", "strict")
-      url.searchParams.set("v", v);
+      url.searchParams.set("q", q);
       if (window.publishedAfter) url.searchParams.set("publishedAfter", window.publishedAfter);
       if (window.publishedBefore) url.searchParams.set("publishedBefore", window.publishedBefore);
   
       const results = await fetch(url);
       if (!results.ok) { 
-        const body = await results.body();
+        const body = await results.text();
         console.error("YouTube error", body);
         if (results.status === 403 && /quota/i.test(body)) {
             console.error("Stopping: YouTube API quota exceeded.");
@@ -114,7 +115,7 @@ async function searchYouTube(queries, window) {
 
     const data = await results.json();
 
-    const pick = pickBestVideo(data.items || [], queries);
+    const pick = pickBestVideo(data.items || [], q);
     if (pick) return pick;
     }
     return null;
