@@ -1,0 +1,22 @@
+:root {
+    --bg: #0f0f11;
+    --panel: #17171a;
+    --text: #eaeaf2;
+    --muted: #a5a6b2;
+    --brand: #e53935;
+    --radius: 12px;
+    --font: "Inter", sans-serif;
+}
+
+
+body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+}
+
+.wrapper{
+    width:420px;
+    
+}
