@@ -69,6 +69,23 @@ app.get("/v1/drivers", async (request, result) => {
     result.json({ data, pagination: { limit: Number(limit), offset: Number(offset) } });
 });
 
+app.get("/v1/teams", async (request, result) => {
+    const { id, limit = 50, offset = 0} = request.query;
+    const team_name = request.query.team_name;
+
+    let query = supabase.from("api_v1_teams").select("*").order("id" , { ascending: true})
+        .range(Number(offset), Number(offset) + Number(limit) -1);
+
+    if (id !== undefined) query = query.eq("id", Number(id))
+
+    if (team_name) {
+        query = query.or(`team_name.ilike.%${team_name}%`);
+    }
+
+    const { data, error } = await query;
+    if (error) return sendError(result, 500, "Database error", error.message);
+    result.json({ data, pagination: { limit: Number(limit), offset: Number(offset) } });
+});
 
 const port = process.env.PORT || 8787;
 app.listen(port, () => console.log(`API listening on http://localhost:${port}`));
