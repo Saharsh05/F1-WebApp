@@ -18,17 +18,45 @@ const sendError = (result, code, message, detail) =>
 app.get("/v1/races", async (request, result) => {
     const { race_type, limit = 50, offset = 0} = request.query;
     const season = request.query.season ?? request.query.year;
+    const session_key = request.query.session_key;
+    const meeting_key = request.query.meeting_key;
+    const first_place_driver = request.query.first_place_driver;
+    const first_place_team = request.query.first_place_team;
+    const date = request.query.date;
     
     let query = supabase.from("api_v1_races").select("*").order("date" , { ascending: true})
         .range(Number(offset), Number(offset) + Number(limit) -1);
 
     if (season !== undefined) query = query.eq("season", Number(season));
+    if (session_key !== undefined) query = query.eq("session_key", Number(session_key));
+    if (meeting_key !== undefined) query = query.eq("meeting_key", Number(meeting_key));
+    if (first_place_driver !== undefined) query = query.eq("first_place_driver", Number(first_place_driver));
+    if (first_place_team !== undefined) query = query.eq("first_place_team", Number(first_place_team));
+    if (date !== undefined) query = query.eq("date", (date));
     if (race_type) {
         const types = String(race_type).split(",").map(s => s.trim()).filter(Boolean);
         query = types.length === 1
             ? query.eq("race_type", types[0])
             : query.in("race_type" , types);
     }
+/*
+
+    if (session_key) {
+        const ids = session_key.split(",").map(n => Number(n)).filter(Number.isFinite);
+        query = ids.length > 1 ? query.in("session_id", ids) : query.eq("session_id", ids[0]);
+        }
+    if (meeting_key) {
+        const nums = meeting_key.split(",").map(n => Number(n)).filter(Number.isFinite);
+        query = nums.length > 1 ? query.in("meeting_key", nums) : query.eq("meeting_key", nums[0]);
+    }
+    if (teamIdList) {
+        const teamIds = teamIdList.split(",").map(n => Number(n)).filter(Number.isFinite);
+        query = teamIds.length > 1 ? query.in("team_id", teamIds) : query.eq("team_id", teamIds[0]);
+    }
+
+    if (driver_name) {
+        query = query.or(`driver_name.ilike.%${driver_name}%`);
+    }*/
 
     const { data, error } = await query;
     if (error) return sendError(result, 500, "Database error", error.message);
