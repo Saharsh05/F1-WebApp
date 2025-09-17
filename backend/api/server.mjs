@@ -39,24 +39,6 @@ app.get("/v1/races", async (request, result) => {
             ? query.eq("race_type", types[0])
             : query.in("race_type" , types);
     }
-/*
-
-    if (session_key) {
-        const ids = session_key.split(",").map(n => Number(n)).filter(Number.isFinite);
-        query = ids.length > 1 ? query.in("session_id", ids) : query.eq("session_id", ids[0]);
-        }
-    if (meeting_key) {
-        const nums = meeting_key.split(",").map(n => Number(n)).filter(Number.isFinite);
-        query = nums.length > 1 ? query.in("meeting_key", nums) : query.eq("meeting_key", nums[0]);
-    }
-    if (teamIdList) {
-        const teamIds = teamIdList.split(",").map(n => Number(n)).filter(Number.isFinite);
-        query = teamIds.length > 1 ? query.in("team_id", teamIds) : query.eq("team_id", teamIds[0]);
-    }
-
-    if (driver_name) {
-        query = query.or(`driver_name.ilike.%${driver_name}%`);
-    }*/
 
     const { data, error } = await query;
     if (error) return sendError(result, 500, "Database error", error.message);
