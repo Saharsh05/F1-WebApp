@@ -1,11 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>F1-WebApp Frontend</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>F1 Fan Hub - Home</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h1>Hello, F1-WebApp!</h1>
-  <script src="script.js"></script>
+<body class="home">
+  <!-- Header / Navigation bar -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a class="brand" href="#">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">F1 Fan Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+      <ul class="nav-links">
+        <li><a href="#">Drivers</a></li>
+        <li><a href="#">Races</a></li>
+        <li><a href="#">Teams</a></li>
+        <li><a href="#">My Dashboard</a></li>
+        <li><a href="login.html" class="login-btn">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Banner -->
+    <section class="banner">
+      <img src="img/homepage.jpg" alt="Formula 1 car on track" class="banner-img"/>
+      <div class="banner-content container">
+        <h1>Electrifying finish at the Monaco Grand Prix</h1>
+        <p>Relive the thrilling moments from the latest race. Get analysis and driver reactions.</p>
+        <a href="#" class="btn">Read Full Story</a>
+      </div>
+    </section>
+
+    <!-- Upcoming Races -->
+    <section class="container section">
+      <h2 class="section-title">Upcoming Races</h2>
+      <div class="grid cards">
+        <a class="card" href="#">
+          <img src="img/race1.jpg" alt="Monaco Grand Prix"/>
+          <div class="card-body">
+            <h3>Monaco Grand Prix</h3>
+            <p>May 26, 2025</p>
+          </div>
+        </a>
+        <a class="card" href="#">
+          <img src="img/race2.jpg" alt="British Grand Prix"/>
+          <div class="card-body">
+            <h3>British Grand Prix</h3>
+            <p>July 14, 2025</p>
+          </div>
+        </a>
+        <a class="card" href="#">
+          <img src="img/race3.jpg" alt="Italian Grand Prix"/>
+          <div class="card-body">
+            <h3>Italian Grand Prix</h3>
+            <p>September 1, 2025</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Popular Drivers -->
+    <section class="container section">
+      <h2 class="section-title">Popular Drivers</h2>
+      <div class="grid avatars">
+        <a class="avatar" href="#">
+          <img src="img/max.jpg" alt="Max Verstappen"/>
+          <div>
+            <strong>Max Verstappen</strong>
+            <span>Red Bull Racing</span>
+          </div>
+        </a>
+        <a class="avatar" href="#">
+          <img src="img/norris.jpg" alt="Lando Norris"/>
+          <div>
+            <strong>Lando Norris</strong>
+            <span>McLaren</span>
+          </div>
+        </a>
+        <a class="avatar" href="#">
+          <img src="img/lewis.jpg" alt="Lewis Hamilton"/>
+          <div>
+            <strong>Lewis Hamilton</strong>
+            <span>Ferrari</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Top Teams -->
+    <section class="container section">
+      <h2 class="section-title">Top Teams</h2>
+      <div class="grid logos">
+        <a class="logo" href="#"><img src="img/redbull.jpg" alt="Red Bull Racing"/></a>
+        <a class="logo" href="#"><img src="img/mclaren.jpg" alt="McLaren"/></a>
+        <a class="logo" href="#"><img src="img/ferrari.jpg" alt="Ferrari"/></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>© 2025 F1 Fan Hub</small>
+    </div>
+  </footer>
+
+  <!-- Optional JS for mobile nav toggle -->
+  <script>
+    const toggle = document.querySelector('.nav-toggle');
+    const links = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => {
+      links.classList.toggle('active');
+    });
+  </script>
 </body>
 </html>
