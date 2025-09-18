@@ -1,133 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Driver Profile — Max Verstappen</title>
-  <link rel="stylesheet" href="style.css" />
-
+  <title>F1 Fan Hub — Driver Profile</title>
+  <link rel="stylesheet" href="driver.css" />
 </head>
-<body>
+<body class="driver">
   <!-- Header / Navigation bar -->
-  <header class="site-header">
+<header class="site-header">
     <nav class="nav container">
-      <a class="brand" href="#" class="brand"><span class="brand-mark" aria-hidden="true"></span>
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
         <span class="brand-text">F1 Fan Hub</span>
       </a>
       <button class="nav-toggle" aria-label="Toggle menu">☰</button>
       <ul class="nav-links">
-        <li><a href="#">Drivers</a></li>
+        <li><a href="drivers.html" class="active">Drivers</a></li>
         <li><a href="#">Races</a></li>
         <li><a href="#">Teams</a></li>
         <li><a href="#">My Dashboard</a></li>
+        <li><a href="login.html" class="login-btn">Login</a></li>
       </ul>
     </nav>
   </header>
- 
-
+  
   <main class="container">
-
-    <!-- Profile Header -->
-
-    <section class="profile-header">
-
-      <img src="max-avatar.png" alt="Max Verstappen" class="avatar" />
-
-      <div>
-
-        <h1>Max Verstappen</h1>
-
-        <p>Red Bull Racing</p>
-
+    <!-- Profile header -->
+    <section class="profile">
+      <div class="who">
+        <h1 id="driver-name">Driver Name</h1>
+        <p id="driver-number">Driver Number: --</p>
+        <p id="driver-team">Team ID: --</p>
       </div>
-
     </section>
+    <hr class="rule" />
 
- 
+    <section class="layout">
+        <!-- Sidebar -->
+        <aside class="card">
+          <h3>Other Drivers</h3>
+          <ul class="driver-list">
+            <li><a href="#">Max Verstappen</a></li>
+            <li><a href="#">Lewis Hamilton</a></li>
+            <li><a href="#">Charles Leclerc</a></li>
+            <li><a href="#">Lando Norris</a></li>
+            <li><a href="#">Sergio Pérez</a></li>
+            <li><a href="#">Carlos Sainz</a></li>
+          </ul>
+        </aside>
+      </section>
+    </main>
+  
+    <footer class="site-footer">
+        <div class="container"><small>©2025 Apex Racing</small></div>
+      </footer>
+    
+      <script src="script.js"></script>
 
-    <!-- Tabs -->
-
-    <nav class="tabs">
-
-      <a href="#" class="active">Overview</a>
-
-      <a href="#">Stats</a>
-
-      <a href="#">Gallery</a>
-
-      <a href="#">Reviews</a>
-
-    </nav>
-
- 
-
-    <!-- Bio -->
-
-    <section class="bio">
-
-      <h2>Driver Bio</h2>
-
-      <p>
-
-        Max Verstappen, born September 30, 1997, is a Belgian-Dutch racing driver and the
-
-        2021, 2022, and 2023 Formula One World Champion. He competes under the Dutch flag
-
-        in Formula One with Red Bull Racing.
-
-      </p>
-
-    </section>
-
- 
-
-    <!-- Key Achievements -->
-
-    <section class="achievements">
-
-      <h2>Key Achievements</h2>
-
-      <div class="stats">
-
-        <div class="stat"><strong>54</strong><span>Wins</span></div>
-
-        <div class="stat"><strong>3</strong><span>Championships</span></div>
-
-        <div class="stat"><strong>98</strong><span>Podiums</span></div>
-
-      </div>
-
-    </section>
-
- 
-
-    <!-- Highlight -->
-
-    <aside class="highlight">
-
-      <h3>Recent Highlight</h3>
-
-      <p><strong>Dominant Win at Bahrain GP</strong></p>
-
-      <p>Verstappen kicked off the 2024 season with a commanding victory, securing pole and leading every lap.</p>
-
-    </aside>
-
-  </main>
-
- 
-
-  <footer class="site-footer">
-
-    <div class="container">
-
-      <small>©2024 Apex Racing. All rights reserved.</small>
-
-    </div>
-
-  </footer>
-
-</body>
-
-</html>
+      <script>
+        //nav toggle script (optional for mobile)
+        const toggle = document.querySelector(".nav-toggle");
+        const navLinks = document.querySelector(".nav-links");
+        toggle.addEventListener("click", () => {
+          navLinks.classList.toggle("active");
+        });
+      </script>
+      
+    </body>
+    </html>
