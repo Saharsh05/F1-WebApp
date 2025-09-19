@@ -1,19 +1,31 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
 
+import authRoutes from "../src/routes/authRoutes.mjs";
+import { requireAuth } from "../src/auth.mjs";
 import { createClient } from "@supabase/supabase-js";
 
 const app = express();
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000"]}));
+
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000"],
+            credentials: true,
+        }));
 app.use(express.json());
+app.use(cookieParser());
+
+//Public
 app.get("/health" , (request, result) => result.json({ok:true}));
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {auth: { persistSession: false}});
+app.use("/auth", authRoutes)
+;
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {auth: { persistSession: false}});
 
 const sendError = (result, code, message, detail) =>
     result.status(code).json({error: { code, message, detail }});
+
 
 app.get("/v1/races", async (request, result) => {
     const { race_type, limit = 50, offset = 0} = request.query;
@@ -29,7 +41,7 @@ app.get("/v1/races", async (request, result) => {
 
     if (season !== undefined) query = query.eq("season", Number(season));
     if (session_key !== undefined) query = query.eq("session_key", Number(session_key));
-    if (meeting_key !== undefined) query = query.eq("meeting_key", Number(meeting_key));
+    if (meeting_key !== undefined) query = query.eq("meeting_key", String(meeting_key));
     if (first_place_driver !== undefined) query = query.eq("first_place_driver", Number(first_place_driver));
     if (first_place_team !== undefined) query = query.eq("first_place_team", Number(first_place_team));
     if (date !== undefined) query = query.eq("date", (date));
@@ -96,6 +108,64 @@ app.get("/v1/teams", async (request, result) => {
     if (error) return sendError(result, 500, "Database error", error.message);
     result.json({ data, pagination: { limit: Number(limit), offset: Number(offset) } });
 });
+
+// Body: { driver_id: number, season?: number }
+
+app.post("/v1/favourites/drivers", requireAuth, async (req, res) => {
+  const driver_id = Number(req.body?.driver_id);
+  const season = req.body?.season === undefined ? null : Number(req.body.season);
+
+  if (!Number.isFinite(driver_id)) {
+    return res.status(400).json({ error: { message: "driver_id (number) is required" } });
+  }
+  if (season !== null && !Number.isFinite(season)) {
+    return res.status(400).json({ error: { message: "season must be a number if provided" } });
+  }
+
+  const payload = {
+    user_id: req.user.id,     
+    driver_id,
+    season,                  
+  };
+
+  const { data, error } = await req.supabase
+    .from("user_favourite_drivers")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) return res.status(400).json({ error });
+  res.status(201).json({ data });
+});
+
+// Body: { team_id: number, season?: number }
+app.post("/v1/favourites/teams", requireAuth, async (req, res) => {
+  const team_id = Number(req.body?.team_id);
+  const season = req.body?.season === undefined ? null : Number(req.body.season);
+
+  if (!Number.isFinite(team_id)) {
+    return res.status(400).json({ error: { message: "team_id (number) is required" } });
+  }
+  if (season !== null && !Number.isFinite(season)) {
+    return res.status(400).json({ error: { message: "season must be a number if provided" } });
+  }
+
+  const payload = {
+    user_id: req.user.id,     
+    team_id,
+    season,              
+  };
+
+  const { data, error } = await req.supabase
+    .from("user_favourite_teams")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) return res.status(400).json({ error });
+  res.status(201).json({ data });
+});
+
 
 const port = process.env.PORT || 8787;
 app.listen(port, () => console.log(`API listening on http://localhost:${port}`));
