@@ -94,6 +94,11 @@ The API demonstrates the implementation of a database-powered web service with a
 * { "email": "user@example.com", 
 * "password": "example" }
 
+### Driver ratings
+
+* `POST /v1/driver/ratings`
+* Body: { driver_id: number, session_key: number, rating: number, comment?: string }
+
 ### User favourites
 
 * `POST /v1/favourites/drivers`

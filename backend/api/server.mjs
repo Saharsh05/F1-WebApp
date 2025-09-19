@@ -166,6 +166,50 @@ app.post("/v1/favourites/teams", requireAuth, async (req, res) => {
   res.status(201).json({ data });
 });
 
+/**
+ * POST /v1/driver/ratings
+ * Body: { driver_id: number, session_key: number, rating: number, comment?: string }
+ */
+app.post("/v1/driver/ratings", requireAuth, async (req, res) => {
+    const driver_id = Number(req.body?.driver_id);
+    const session_key = Number(req.body?.session_key);
+    const rating = Number(req.body?.rating);
+    const comment = (req.body?.comment ?? "").toString().trim();
+  
+    // Basic validation
+    if (!Number.isFinite(driver_id)) {
+      return res.status(400).json({ error: { message: "driver_id (number) is required" } });
+    }
+    if (!Number.isFinite(session_key)) {
+      return res.status(400).json({ error: { message: "session_key (number) is required" } });
+    }
+    if (!Number.isFinite(rating)) {
+      return res.status(400).json({ error: { message: "rating (number) is required" } });
+    }
+    if (rating < 1 || rating > 10) {
+      return res.status(400).json({ error: { message: "rating must be between 1 and 10" } });
+    }
+    if (comment.length > 1000) {
+      return res.status(400).json({ error: { message: "comment too long (max 1000 chars)" } });
+    }
+  
+    const payload = {
+      user_id: req.user.id,      // enforce owner
+      driver_id,
+      session_key,
+      rating,
+      comment: comment || null,  // allow null in DB
+    };
+  
+    const { data, error } = await req.supabase
+      .from("driver ratings")
+      .insert(payload)
+      .select()
+      .single();
+  
+    if (error) return res.status(400).json({ error });
+    res.status(201).json({ data });
+  });
 
 const port = process.env.PORT || 8787;
 app.listen(port, () => console.log(`API listening on http://localhost:${port}`));
