@@ -27,23 +27,17 @@ function renderDrivers(drivers) {
   }
 
   drivers.forEach(d => {
-    const teamName = teamsMap.get(d.team_id) || "Unknown Team";
-
-const container = document.querySelector(".drivers-grid");
-    container.innerHTML = "";
-    drivers.forEach(d => {
     const card = document.createElement("div");
-  card.className = "driver-card";
-  card.innerHTML = `
-    <h4>${d.driver_name}</h4>
-    <p>Number: ${d.driver_number}</p>
-    <p>Team: ${d.driver_team}</p>
-  `;
-  container.appendChild(card);
-});
-
+    card.className = "driver-card";
+    card.innerHTML = `
+      <h4>${d.driver_name}</h4>
+      <p>Number: ${d.driver_number}</p>
+      <p>Team: ${d.driver_team || "Unknown Team"}</p>
+    `;
+    container.appendChild(card);
   });
 }
+
 
 // --- Page load ---
 (async () => {
