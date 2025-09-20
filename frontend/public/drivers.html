@@ -56,13 +56,9 @@
       navLinks.classList.toggle("active");
     });
   </script>
-
+  <script type="module" src="drivers.js"></script>
   <script>
-    fetch('v1/drivers')
-      .then(response => response.json())
-      .then(drivers => console.log(drivers));
-
-    /*async function testDriversAPI() {
+    async function testDriversAPI() {
       try {
         const res = await fetch("http://localhost:8787/v1/drivers");
         const data = await res.json();
@@ -77,7 +73,7 @@
       }
     }
   
-    testDriversAPI();*/
+    testDriversAPI();
   </script>
 </body>
 </html>

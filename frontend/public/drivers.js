@@ -1,4 +1,4 @@
-/* drivers.js
+ drivers.js
 let teamsMap = new Map();
 
 // --- Backend API base ---
@@ -50,4 +50,4 @@ const container = document.querySelector(".drivers-grid");
   await fetchTeams();
   const drivers = await fetchDrivers();
   renderDrivers(drivers);
-})(); */
+})(); 
