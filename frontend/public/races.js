@@ -49,6 +49,7 @@ async function fetchRaces(season = "") {
   }
 }
 
+
 // --- Render races ---
 function renderRaces(races) {
   const container = document.getElementById("races-list");
