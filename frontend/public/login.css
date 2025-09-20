@@ -4,6 +4,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
+<<<<<<< HEAD
 }
 
 body.login {
@@ -28,8 +29,64 @@ body.login {
 }
 
 .nav {
+=======
+  }
+  
+  body.login {
+    background: url(login.jpg) no-repeat center/cover;
+    min-height: 100vh;
+    padding-top: 100px; /* space for navbar */
+  }
+  
+  /* --- Header / Nav --- */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(14,15,18,0.85);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(6px);
+  }
+  
+  .nav {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 1rem 10%;
+  }
+  
+  .brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; }
+  .brand-mark { width: 18px; height: 18px; background: #e11d2e; transform: rotate(45deg); border-radius: 3px; }
+  .brand-text { font-weight: 700; }
+  
+  .nav-links {
+    display: flex; gap: 14px; list-style: none;
+  }
+  
+  .nav-links a {
+    color: #b2b3bd;
+    text-decoration: none;
+    font-size: 0.95rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+  
+  .nav-links .login-btn.disabled {
+    background: #e11d2e;
+    color: #fff;
+    cursor: default;
+    opacity: 0.7;
+  }
+  
+  .nav-links .login-btn:hover:not(.disabled) { background: #ff2a3a; }
+  .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.06); }
+  
+  /* --- Login Form Wrapper --- */
+  .login-main {
+>>>>>>> 823bfab (created driver and races tab)
+    display: flex;
+    align-items: center;
+<<<<<<< HEAD
     justify-content: space-between;
     padding: 1rem 10%;
 }
@@ -76,6 +133,13 @@ body.login {
 
 /* --- Login Form Wrapper --- */
 .wrapper {
+=======
+    min-height: calc(100vh - 100px); /* account for navbar */
+    padding: 20px;
+  }
+  
+  .wrapper {
+>>>>>>> 823bfab (created driver and races tab)
     width: 90%;
     max-width: 420px;
     background: rgba(0,0,0,0.5);
@@ -84,6 +148,7 @@ body.login {
     border-radius: 12px;
     padding: 30px 40px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+<<<<<<< HEAD
     margin-top: 20px; /* space below header */
 }
 
@@ -97,6 +162,20 @@ body.login {
 }
 
 .input-box input {
+=======
+  }
+  
+  .wrapper h1 { font-size: 36px; text-align: center; margin-bottom: 10px; }
+  .wrapper h2 { font-size: 20px; text-align: center; margin-bottom: 30px; }
+  
+  .input-box {
+    width: 100%;
+    height: 50px;
+    margin-bottom: 25px;
+  }
+  
+  .input-box input {
+>>>>>>> 823bfab (created driver and races tab)
     width: 100%;
     height: 100%;
     background: transparent;
@@ -106,15 +185,24 @@ body.login {
     font-size: 16px;
     color: #fff;
     outline: none;
+<<<<<<< HEAD
 }
 
 .input-box input::placeholder { color: #fff; }
 
 .remember-forgot {
+=======
+  }
+  
+  .input-box input::placeholder { color: #fff; }
+  
+  .remember-forgot {
+>>>>>>> 823bfab (created driver and races tab)
     display: flex;
     justify-content: space-between;
     font-size: 14.5px;
     margin-bottom: 20px;
+<<<<<<< HEAD
 }
 
 .remember-forgot label input { accent-color: #fff; margin-right: 5px; }
@@ -122,6 +210,15 @@ body.login {
 .remember-forgot a:hover { text-decoration: underline; }
 
 .btn {
+=======
+  }
+  
+  .remember-forgot label input { accent-color: #fff; margin-right: 5px; }
+  .remember-forgot a { color: #fff; text-decoration: none; }
+  .remember-forgot a:hover { text-decoration: underline; }
+  
+  .btn {
+>>>>>>> 823bfab (created driver and races tab)
     width: 100%;
     height: 45px;
     background: #e11d2e;
@@ -133,6 +230,7 @@ body.login {
     cursor: pointer;
     margin-top: 10px;
     transition: background 0.3s;
+<<<<<<< HEAD
 }
 
 .btn:hover { background: #ff2a3a; }
@@ -164,8 +262,35 @@ body.login {
 
 /* --- Responsive --- */
 @media (max-width: 480px) {
+=======
+  }
+  
+  .btn:hover { background: #ff2a3a; }
+  
+  .register-link {
+    font-size: 14.5px;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .register-link a {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .register-link a:hover { text-decoration: underline; }
+  
+  /* --- Responsive --- */
+  @media (max-width: 480px) {
+>>>>>>> 823bfab (created driver and races tab)
     .wrapper { padding: 25px 20px; }
     .wrapper h1 { font-size: 28px; }
     .wrapper h2 { font-size: 18px; }
     .input-box { margin-bottom: 20px; }
+<<<<<<< HEAD
 }
+=======
+  }
+  
+>>>>>>> 823bfab (created driver and races tab)
