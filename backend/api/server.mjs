@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
-dotenv.config();
+//import dotenv from "dotenv";
+//dotenv.config();
 
 import authRoutes from "../src/routes/authRoutes.mjs";
 import { requireAuth } from "../src/auth.mjs";
@@ -10,9 +10,10 @@ import { createClient } from "@supabase/supabase-js";
 
 const app = express();
 
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000"],
+//app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000"],
             credentials: true,
-        }));
+        //}));
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -21,13 +22,30 @@ app.get("/health" , (request, result) => result.json({ok:true}));
 
 app.use("/auth", authRoutes)
 ;
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {auth: { persistSession: false}});
+//const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {auth: { persistSession: false}});
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 
 const sendError = (result, code, message, detail) =>
     result.status(code).json({error: { code, message, detail }});
 
+// GET /v1/drivers
+app.get("/v1/drivers", async (req, res) => {
+  const { data, error } = await supabase.from("drivers").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ data });
+});
 
-app.get("/v1/races", async (request, result) => {
+// GET /v1/races
+app.get("/v1/races", async (req, res) => {
+  const { data, error } = await supabase.from("races").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ data });
+});
+
+/*app.get("/v1/races", async (request, result) => {
     const { race_type, limit = 50, offset = 0} = request.query;
     const season = request.query.season ?? request.query.year;
     const session_key = request.query.session_key;
@@ -57,7 +75,7 @@ app.get("/v1/races", async (request, result) => {
     result.json({ data, pagination: { limit: Number(limit), offset: Number(offset) } });
 });
 
-app.get("/v1/drivers", async (request, result) => {
+/*app.get("/v1/drivers", async (request, result) => {
     const { driver_team, limit = 50, offset = 0} = request.query;
     const driver_id = request.query.driver_id;
     const driver_number = request.query.driver_number;
@@ -89,9 +107,9 @@ app.get("/v1/drivers", async (request, result) => {
     const { data, error } = await query;
     if (error) return sendError(result, 500, "Database error", error.message);
     result.json({ data, pagination: { limit: Number(limit), offset: Number(offset) } });
-});
+});*/
 
-app.get("/v1/teams", async (request, result) => {
+/*app.get("/v1/teams", async (request, result) => {
     const { id, limit = 50, offset = 0} = request.query;
     const team_name = request.query.team_name;
 
@@ -107,9 +125,9 @@ app.get("/v1/teams", async (request, result) => {
     const { data, error } = await query;
     if (error) return sendError(result, 500, "Database error", error.message);
     result.json({ data, pagination: { limit: Number(limit), offset: Number(offset) } });
-});
+});*/
 
-// Body: { driver_id: number, season?: number }
+// Body: { driver_id: number, season?: number } - this is actually commented out
 
 app.post("/v1/favourites/drivers", requireAuth, async (req, res) => {
   const driver_id = Number(req.body?.driver_id);
