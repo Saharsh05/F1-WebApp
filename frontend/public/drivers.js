@@ -1,21 +1,8 @@
-// drivers.js
+/* drivers.js
 let teamsMap = new Map();
 
 // --- Backend API base ---
 const API_BASE = "http://localhost:8787";
-
-// --- Fetch teams (for driver info) ---
-async function fetchTeams() {
-  try {
-    const res = await fetch(`${API_BASE}/v1/teams`);
-    const result = await res.json();
-    (result.data || []).forEach(t => {
-      teamsMap.set(t.id, t.team_name);
-    });
-  } catch (err) {
-    console.error("Failed to fetch teams:", err);
-  }
-}
 
 // --- Fetch drivers ---
 async function fetchDrivers() {
@@ -63,4 +50,4 @@ const container = document.querySelector(".drivers-grid");
   await fetchTeams();
   const drivers = await fetchDrivers();
   renderDrivers(drivers);
-})();
+})(); */
