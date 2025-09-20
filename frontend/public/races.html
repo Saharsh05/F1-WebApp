@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>F1 Fan Hub — Races</title>
+  <link rel="stylesheet" href="races.css" />
+</head>
+<body class="races">
+  <!-- Header / Nav -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">F1 Fan Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+      <ul class="nav-links">
+        <li><a href="drivers.html">Drivers</a></li>
+        <li><a href="races.html" class="active">Races</a></li>
+        <li><a href="#">Teams</a></li>
+        <li><a href="#">My Dashboard</a></li>
+        <li><a href="login.html" class="login-btn">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container section">
+    <!-- Featured Video -->
+    <section class="featured-video">
+      <iframe id="featured-video" src="" frameborder="0" allowfullscreen></iframe>
+      <div class="video-overlay">
+        <h1>Featured Race</h1>
+        <p>Catch the latest race highlights!</p>
+      </div>
+    </section>
+
+    <h1 class="section-title">Race Highlights</h1>
+    <p class="muted">Browse races by year and see the winners.</p>
+
+    <!-- Filters -->
+    <div class="filters">
+      <select id="filter-season">
+        <option value="">All Seasons</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+      </select>
+    </div>
+
+    <!-- Race list -->
+    <div id="races-list" class="grid cards race-list">
+      <!-- JS injects race cards -->
+    </div>
+
+    <!-- Race highlights -->
+    <section class="race-highlights">
+      <h2>Race Highlights</h2>
+      <div class="highlights-grid" id="highlights-grid" aria-label="Race highlights videos">
+        <!-- JS injects highlights -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container"><small>©2025 F1 Fan Hub</small></div>
+  </footer>
+
+  <script type="module" src="races.js"></script>
+</body>
+</html>

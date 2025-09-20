@@ -1,0 +1,177 @@
+/* --- General Reset & Fonts --- */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #222;
+    scroll-behavior: smooth;
+  }
+  
+  h1, h2, h3 {
+    margin: 0.5rem 0;
+  }
+  
+  /* --- Header / Nav --- */
+  .site-header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(14,15,18,0.85);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(6px);
+  }
+  
+  .nav {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    padding: 1rem 10%;
+  }
+  
+  .brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; }
+  .brand-mark { width: 18px; height: 18px; background: #e11d2e; transform: rotate(45deg); border-radius: 3px; }
+  .brand-text { font-weight: 700; }
+  
+  .nav-links {
+    display: flex; gap: 14px; list-style: none;
+  }
+  
+  .nav-links a {
+    color: #b2b3bd; text-decoration: none; font-size: 0.95rem; padding: 6px 10px; border-radius: 8px;
+  }
+  
+  .nav-links .login-btn {
+    background: #e11d2e;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  
+  .nav-links .login-btn:hover { background: #ff2a3a; }
+  .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.06); }
+  .nav-toggle { display: none; }
+  
+  /* --- Featured Video --- */
+  .featured-video {
+    position: relative;
+    width: 100%;
+    max-height: 500px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  
+  .featured-video iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .video-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+  }
+  
+  /* --- Filters --- */
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  #filter-season {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+  }
+  
+  #filter-season:focus {
+    outline: none;
+    border-color: #e11d2e;
+    box-shadow: 0 0 0 2px rgba(225,29,46,0.2);
+  }
+  
+  /* --- Race List/Grid --- */
+  .race-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 0 2rem 2rem 2rem;
+  }
+  
+  .race-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .race-card h3 {
+    font-size: 1.2rem;
+    margin: 0.5rem;
+  }
+  
+  .race-card p {
+    font-size: 0.9rem;
+    margin: 0 0.5rem 0.5rem 0.5rem;
+    color: #555;
+  }
+  
+  .race-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  }
+  
+  /* --- Highlights Section --- */
+  .race-highlights {
+    padding: 2rem;
+    background: #fafafa;
+  }
+  
+  .race-highlights h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .highlight-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+  }
+  
+  .highlight-card iframe {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .highlight-card h3 {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .highlight-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  /* --- Responsive --- */
+  @media (max-width: 600px) {
+    .highlight-card iframe { height: 180px; }
+    .filters { flex-direction: column; gap: 0.5rem; }
+  }
+  
