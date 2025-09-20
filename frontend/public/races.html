@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>F1 Fan Hub — Races</title>
   <link rel="stylesheet" href="races.css" />
-  <script type="module" src="races.js"></script>
 </head>
 <body class="races">
   <!-- Header / Nav -->
@@ -67,6 +66,16 @@
     <div class="container"><small>©2025 F1 Fan Hub</small></div>
   </footer>
 
+  <!-- Optional JS for mobile nav toggle -->
+  <script>
+    const toggle = document.querySelector('.nav-toggle');
+    const links = document.querySelector('.nav-links');
+    toggle.addEventListener('click', () => {
+      links.classList.toggle('active');
+    });
+  </script>
+
+  <!-- Main races.js script -->
   <script type="module" src="races.js"></script>
 </body>
 </html>

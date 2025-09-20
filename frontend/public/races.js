@@ -3,15 +3,18 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 let driversMap = new Map();
 let teamsMap = new Map();
 
+// --- Backend API base ---
+const API_BASE = "http://localhost:8787";
+
 // --- Supabase setup for highlights ---
 const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2YXJ6Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ'; // frontend anon key
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2YXJ6Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
-    const res = await fetch("/v1/drivers");
+    const res = await fetch(`${API_BASE}/v1/drivers`);
     const result = await res.json();
     (result.data || []).forEach(d => {
       driversMap.set(d.driver_id, d.driver_name);
@@ -24,7 +27,7 @@ async function fetchDrivers() {
 // --- Fetch teams ---
 async function fetchTeams() {
   try {
-    const res = await fetch("/v1/teams");
+    const res = await fetch(`${API_BASE}/v1/teams`);
     const result = await res.json();
     (result.data || []).forEach(t => {
       teamsMap.set(t.id, t.team_name);
@@ -36,7 +39,7 @@ async function fetchTeams() {
 
 // --- Fetch races ---
 async function fetchRaces(season = "") {
-  let url = "/v1/races";
+  let url = `${API_BASE}/v1/races`;
   if (season) url += `?season=${encodeURIComponent(season)}`;
 
   try {
@@ -99,7 +102,7 @@ async function loadHighlights() {
 
   data.forEach(item => {
     const videoId = item.youtube_video_id;
-    const raceName = item.races.meeting_key; // replace with proper race name if available
+    const raceName = item.races.meeting_key;
     const season = item.races.season;
 
     const card = document.createElement('div');
@@ -130,6 +133,5 @@ async function loadHighlights() {
     renderRaces(filtered);
   });
 
-  // Load highlights after races
   await loadHighlights();
 })();
