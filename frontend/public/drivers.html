@@ -58,5 +58,23 @@
   </script>
 
   <script type="module" src="drivers.js"></script>
+  <script>
+    async function testDriversAPI() {
+      try {
+        const res = await fetch("http://localhost:8787/v1/drivers");
+        const data = await res.json();
+        console.log("Drivers API response:", data);
+  
+        // Just show it quickly on the page for debugging
+        const debug = document.createElement("pre");
+        debug.textContent = JSON.stringify(data, null, 2);
+        document.body.appendChild(debug);
+      } catch (err) {
+        console.error("Failed to fetch drivers:", err);
+      }
+    }
+  
+    testDriversAPI();
+  </script>
 </body>
 </html>
