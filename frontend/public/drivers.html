@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>F1 Fan Hub — Drivers</title>
+  <link rel="stylesheet" href="driver.css" />
+</head>
+<body class="driver">
+  <!-- Header / Navigation bar -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">F1 Fan Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+      <ul class="nav-links">
+        <li><a href="drivers.html" class="active">Drivers</a></li>
+        <li><a href="races.html">Races</a></li>
+        <li><a href="#">Teams</a></li>
+        <li><a href="#">My Dashboard</a></li>
+        <li><a href="login.html" class="login-btn">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container section">
+    <h1 class="section-title">Drivers</h1>
+    <p class="muted">Browse F1 drivers by team or number.</p>
+
+    <!-- Optional Filters -->
+    <div class="filters">
+      <select id="filter-team">
+        <option value="">All Teams</option>
+        <!-- JS can dynamically populate team options -->
+      </select>
+    </div>
+
+    <!-- Driver Cards Grid -->
+    <div id="drivers-list" class="grid cards driver-list">
+      <!-- JS will inject driver cards here -->
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container"><small>©2025 F1 Fan Hub</small></div>
+  </footer>
+
+  <script>
+    // Nav toggle script (optional for mobile)
+    const toggle = document.querySelector(".nav-toggle");
+    const navLinks = document.querySelector(".nav-links");
+    toggle.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+  </script>
+
+  <script type="module" src="drivers.js"></script>
+</body>
+</html>
