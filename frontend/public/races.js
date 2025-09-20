@@ -6,11 +6,6 @@ let teamsMap = new Map();
 // --- Backend API base ---
 const API_BASE = "http://localhost:8787";
 
-// --- Supabase setup for highlights ---
-const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2YXJ6Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
@@ -51,6 +46,7 @@ async function fetchRaces(season = "") {
     return [];
   }
 }
+
 
 // --- Render races ---
 function renderRaces(races) {
