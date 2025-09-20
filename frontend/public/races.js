@@ -6,11 +6,18 @@ let teamsMap = new Map();
 // --- Backend API base ---
 const API_BASE = "http://localhost:8787";
 
+// --- Supabase setup for highlights ---
+const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2YXJ6Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
     const res = await fetch(`${API_BASE}/v1/drivers`);
     const result = await res.json();
+    console.log("Fetched drivers:", result);
+
     (result.data || []).forEach(d => {
       driversMap.set(d.driver_id, d.driver_name);
     });
@@ -24,6 +31,8 @@ async function fetchTeams() {
   try {
     const res = await fetch(`${API_BASE}/v1/teams`);
     const result = await res.json();
+    console.log("Fetched teams:", result);
+
     (result.data || []).forEach(t => {
       teamsMap.set(t.id, t.team_name);
     });
@@ -40,6 +49,7 @@ async function fetchRaces(season = "") {
   try {
     const res = await fetch(url);
     const result = await res.json();
+    console.log("Fetched races:", result);
     return result.data || [];
   } catch (err) {
     console.error("Failed to fetch races:", err);
@@ -47,10 +57,14 @@ async function fetchRaces(season = "") {
   }
 }
 
-
 // --- Render races ---
 function renderRaces(races) {
   const container = document.getElementById("races-list");
+  if (!container) {
+    console.error("Races container not found in DOM");
+    return;
+  }
+
   container.innerHTML = "";
 
   if (!races.length) {
