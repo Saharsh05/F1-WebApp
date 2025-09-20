@@ -17,8 +17,8 @@ let driversMap = new Map();
 let teamsMap = new Map();
 
 // --- Supabase setup for highlights ---
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // frontend anon key
+const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2YXJ6Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ'; // frontend anon key
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Fetch drivers ---
