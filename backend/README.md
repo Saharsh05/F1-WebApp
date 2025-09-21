@@ -99,6 +99,17 @@ The API demonstrates the implementation of a database-powered web service with a
 * `POST /v1/driver/ratings`
 * Body: { driver_id: number, session_key: number, rating: number, comment?: string }
 
+ * `GET /v1/driver/ratings`
+ * Auth required (RLS: SELECT for authenticated users)
+ * Query parameters (all optional):
+ *  - session_key: number
+ *  - driver_id: number
+ *  - user_id: uuid
+ *  - limit: number (default 20)
+ *  - offset: number (default 0)
+ *  - order: "created_at" | "rating" (default "created_at")
+ *  - dir: "asc" | "desc" (default "desc")
+ 
 ### User favourites
 
 * `POST /v1/favourites/drivers`

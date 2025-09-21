@@ -138,6 +138,54 @@ app.post("/v1/favourites/drivers", requireAuth, async (req, res) => {
   res.status(201).json({ data });
 });
 
+app.get("/v1/driver/ratings", requireAuth, async (req, res) => {
+  try {
+    const {
+      session_key,
+      driver_id,
+      user_id,
+      limit = 20,
+      offset = 0,
+      order = "created_at",
+      dir = "desc",
+    } = req.query;
+
+    const supa = req.supabase; // uses caller's JWT so RLS applies
+
+    let query = supa
+      .from("driver ratings")
+      .select(
+        "rating_id, created_at, session_key, rating, comment, user_id, driver_id",
+        { count: "exact" }
+      )
+      .order(String(order), { ascending: String(dir).toLowerCase() === "asc" });
+
+    if (session_key !== undefined) query = query.eq("session_key", Number(session_key));
+    if (driver_id !== undefined)  query = query.eq("driver_id", Number(driver_id));
+    if (user_id !== undefined)    query = query.eq("user_id", String(user_id));
+
+    const from = Number(offset);
+    const to = from + Number(limit) - 1;
+    query = query.range(from, to);
+
+    const { data, count, error } = await query;
+    if (error) return sendError(res, 400, "Database error", error.message);
+
+    res.json({
+      data,
+      pagination: {
+        total: count ?? 0,
+        limit: Number(limit),
+        offset: Number(offset),
+        order: String(order),
+        dir: String(dir).toLowerCase() === "asc" ? "asc" : "desc",
+      },
+    });
+  } catch (err) {
+    return sendError(res, 500, err.message);
+  }
+});
+
 // Body: { team_id: number, season?: number }
 app.post("/v1/favourites/teams", requireAuth, async (req, res) => {
   const team_id = Number(req.body?.team_id);
