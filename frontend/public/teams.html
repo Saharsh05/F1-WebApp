@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>F1 Fan Hub — Drivers</title>
-  <link rel="stylesheet" href="drivers.css" />
+  <title>F1 Fan Hub — Teams</title>
+  <link rel="stylesheet" href="teams.css" />
 </head>
-<body class="driver">
+<body class="teams">
+
   <!-- Header / Navigation bar -->
   <header class="site-header">
     <nav class="nav container">
@@ -16,39 +17,30 @@
       </a>
       <button class="nav-toggle" aria-label="Toggle menu">☰</button>
       <ul class="nav-links">
-        <li><a href="drivers.html" class="active">Drivers</a></li>
+        <li><a href="drivers.html">Drivers</a></li>
+        <li><a href="teams.html" class="active">Teams</a></li>
         <li><a href="races.html">Races</a></li>
-        <li><a href="teams.html">Teams</a></li>
         <li><a href="dashboard.html">My Dashboard</a></li>
       </ul>
     </nav>
   </header>
 
   <main class="container section">
-    <h1 class="section-title">Drivers</h1>
-    <p class="muted">Browse F1 drivers by team or number.</p>
+    <h1 class="section-title">Teams</h1>
+    <p class="muted">Browse F1 teams and their drivers.</p>
 
-    <!-- Optional Filters -->
-    <div class="filters">
-      <select id="filter-team">
-        <option value="">All Teams</option>
-        <!-- JS can dynamically populate team options -->
-      </select>
-    </div>
-
-    <!-- Driver Cards Grid -->
-    <section class="drivers-section">
-      <div id="drivers-list" class="drivers-grid"></div>
+    <!-- Teams Grid -->
+    <section class="teams-section">
+      <div id="teams-list" class="teams-grid"></div>
     </section>
-    
-    <button id="fetch-btn">Fetch Drivers</button>
 
+    <button id="fetch-teams-btn">Fetch Teams</button>
   </main>
 
   <footer class="site-footer">
     <div class="container"><small>©2025 F1 Fan Hub</small></div>
   </footer>
 
-  <script type="module" src="drivers.js"></script>
+  <script type="module" src="teams.js"></script>
 </body>
 </html>

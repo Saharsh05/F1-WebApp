@@ -16,12 +16,16 @@
       </a>
       <button class="nav-toggle" aria-label="Toggle menu">☰</button>
       <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
         <li><a href="drivers.html">Drivers</a></li>
         <li><a href="races.html">Races</a></li>
-        <li><a href="#">Teams</a></li>
-        <li><a href="#">My Dashboard</a></li>
-        <li><a href="login.html" class="login-btn">Login</a></li>
+        <li><a href="teams.html">Teams</a></li>
+        <li><a href="dashboard.html" id="dashboard-nav">My Dashboard</a></li>
+        <li><button id="logout-btn" class="btn" style="display: none;">Logout</button></li>
       </ul>
+      
+      
+      
     </nav>
   </header>
 
@@ -109,13 +113,7 @@
     </div>
   </footer>
 
-  <!-- Optional JS for mobile nav toggle -->
-  <script>
-    const toggle = document.querySelector('.nav-toggle');
-    const links = document.querySelector('.nav-links');
-    toggle.addEventListener('click', () => {
-      links.classList.toggle('active');
-    });
-  </script>
+  <script type="module" src="nav.js"></script>
+
 </body>
 </html>

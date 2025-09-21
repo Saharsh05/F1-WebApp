@@ -1,17 +1,16 @@
 console.log("Script loading");
 
 const button = document.getElementById("fetch-btn");
-  if (button) {
+if (button) {
   console.log("found button!");
   button.addEventListener("click", async () => {
     const drivers = await fetchDrivers();
-    console.log("fetch-btn:", data);
-    // If you want to display them on the page instead of only console.log:
-    // renderDrivers(drivers);
+    console.log("fetch-btn:", drivers);
+    renderDrivers(drivers); // <--- now it actually shows on the page
   });
-  } else {
- console.log("Button not found?! - maybe DOM not fully loaded???");
-   }
+} else {
+  console.log("Button not found?! - maybe DOM not fully loaded???");
+}
 
 // --- Backend API base ---
 const API_BASE = "http://localhost:8787";
@@ -19,14 +18,17 @@ const API_BASE = "http://localhost:8787";
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
-    const res = await fetch(`${API_BASE}/v1/drivers?q=hamilton&limit=5`);
+    const res = await fetch(`${API_BASE}/v1/drivers?q=hamilton&limit=50`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
     console.log("Fetched drivers:", data);
+    return data.data || [];   // <--- return the array of drivers
   } catch (err) {
     console.error("Failed to fetch drivers:", err);
+    return []; // return empty array on error
   }
 }
+
 // --- Render drivers ---
 function renderDrivers(drivers) {
   const container = document.getElementById("drivers-list");
@@ -52,14 +54,4 @@ function renderDrivers(drivers) {
     `;
     container.appendChild(card);
   });
-
-  document.getElementById("fetch-btn")?.addEventListener("click", async () => {
-    const drivers = await fetchDrivers();
-    console.log("fetch-btn:", data);
-    // If you want to display them on the page instead of only console.log:
-    // renderDrivers(drivers);
-  });
-  
 }
-
-

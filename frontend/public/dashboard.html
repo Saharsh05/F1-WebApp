@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard — F1 Fan Hub</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="dashboard">
+
+  <!-- Top Navigation -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a class="brand" href="index.html">
+        <span class="brand-text">F1 Fan Hub</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="drivers.html">Drivers</a></li>
+        <li><a href="teams.html">Teams</a></li>
+        <li><a href="races.html">Races</a></li>
+        <li><a href="dashboard.html" class="active"> My Dashboard</a></li>
+        <li><button id="logout-btn" class="btn" style="display: none;">Logout</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="content container">
+
+    <h1 class="page-title">My Dashboard</h1>
+
+    <!-- Favourite Drivers -->
+    <section class="section">
+      <h2>Favourite Drivers</h2>
+      <form id="favourite-drivers-form">
+        <select id="drivers-select" required>
+          <option value="" disabled selected>Select your favourite driver</option>
+          <option value="1">Lewis Hamilton</option>
+          <option value="2">Max Verstappen</option>
+          <option value="3">Charles Leclerc</option>
+          <option value="4">Lando Norris</option>
+        </select>
+        <button type="submit" class="fav-driver-btn">Save</button>
+        <div id="drivers-message"></div>
+      </form>
+    </section>
+
+    <!-- Favourite Teams -->
+    <section class="section">
+      <h2>Favourite Teams</h2>
+      <form id="favourite-teams-form">
+        <select id="teams-select" required>
+          <option value="" disabled selected>Select your favourite team</option>
+          <option value="1">Mercedes</option>
+          <option value="2">Red Bull</option>
+          <option value="3">Ferrari</option>
+          <option value="4">McLaren</option>
+        </select>
+        <button type="submit" class="fav-team-btn">Save</button>
+        <div id="teams-message"></div>
+        
+      </form>
+    </section>
+
+    <!-- Driver Ratings -->
+    <section class="section">
+      <h2>Rate a Driver</h2>
+      <form id="driver-rating-form">
+        <select id="rating-driver-select" required>
+          <option value="" disabled selected>Select a driver to rate</option>
+          <option value="1">Lewis Hamilton</option>
+          <option value="2">Max Verstappen</option>
+          <option value="3">Charles Leclerc</option>
+          <option value="4">Lando Norris</option>
+        </select>
+        <input type="number" id="driver-rating" min="1" max="10" placeholder="Rating (1-10)" required>
+        <label for="driver-comment">Comment (optional):</label>
+        <textarea id="driver-comment" placeholder="Write a comment..." rows="3"></textarea>
+        <button type="submit" class="rating-btn">Submit Rating</button>
+        <div id="rating-message"></div>
+        <div id="review-feedback"></div>
+
+      </form>
+    </section>
+
+    <div class="reviews-section">
+        <h2>Your Reviews</h2>
+        <ul id="reviews-list"></ul>
+      </div>
+      
+
+  </main>
+  <script type="module" src="dashboard.js"></script>
+  <script type="module" src="logout.js"></script>
+
+</body>
+</html>
