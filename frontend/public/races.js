@@ -1,18 +1,5 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-<<<<<<< HEAD
-// --- Backend API base ---
-const API_BASE = "http://localhost:8787";
-
-// --- Supabase setup for highlights ---
-const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// --- Fetch races ---
-async function fetchRaces(season = "") {
-  let url = `${API_BASE}/v1/races`;
-=======
 let driversMap = new Map();
 let teamsMap = new Map();
 
@@ -50,16 +37,11 @@ async function fetchTeams() {
 // --- Fetch races ---
 async function fetchRaces(season = "") {
   let url = "/v1/races";
->>>>>>> 823bfab (created driver and races tab)
   if (season) url += `?season=${encodeURIComponent(season)}`;
 
   try {
     const res = await fetch(url);
     const result = await res.json();
-<<<<<<< HEAD
-    console.log("Fetched races:", result);
-=======
->>>>>>> 823bfab (created driver and races tab)
     return result.data || [];
   } catch (err) {
     console.error("Failed to fetch races:", err);
@@ -70,14 +52,6 @@ async function fetchRaces(season = "") {
 // --- Render races ---
 function renderRaces(races) {
   const container = document.getElementById("races-list");
-<<<<<<< HEAD
-  if (!container) {
-    console.error("Races container not found in DOM");
-    return;
-  }
-
-=======
->>>>>>> 823bfab (created driver and races tab)
   container.innerHTML = "";
 
   if (!races.length) {
@@ -86,25 +60,17 @@ function renderRaces(races) {
   }
 
   races.forEach(r => {
-<<<<<<< HEAD
-=======
     const driverName = driversMap.get(r.first_place_driver) || "Unknown Driver";
     const teamName = teamsMap.get(r.first_place_team) || "Unknown Team";
 
->>>>>>> 823bfab (created driver and races tab)
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
       <div class="card-body">
         <h3>${r.race_type || "Race"} — ${r.season || ""}</h3>
         <p>Date: ${r.date ? new Date(r.date).toLocaleDateString() : "TBA"}</p>
-<<<<<<< HEAD
-        <p><strong>Winner ID:</strong> ${r.first_place_driver || "Unknown"}</p>
-        <p><strong>Team ID:</strong> ${r.first_place_team || "Unknown"}</p>
-=======
         <p><strong>Winner:</strong> ${driverName}</p>
         <p><strong>Team:</strong> ${teamName}</p>
->>>>>>> 823bfab (created driver and races tab)
       </div>
     `;
     container.appendChild(card);
@@ -133,13 +99,8 @@ async function loadHighlights() {
 
   data.forEach(item => {
     const videoId = item.youtube_video_id;
-<<<<<<< HEAD
-    const raceName = item.races.meeting_key || "Race";
-    const season = item.races.season || "";
-=======
     const raceName = item.races.meeting_key; // replace with proper race name if available
     const season = item.races.season;
->>>>>>> 823bfab (created driver and races tab)
 
     const card = document.createElement('div');
     card.className = 'highlight-card';
@@ -157,20 +118,6 @@ async function loadHighlights() {
 
 // --- Page load ---
 (async () => {
-<<<<<<< HEAD
-  const races = await fetchRaces();
-  renderRaces(races);
-
-  const seasonFilter = document.getElementById("filter-season");
-  if (seasonFilter) {
-    seasonFilter.addEventListener("change", async (e) => {
-      const season = e.target.value;
-      const filtered = await fetchRaces(season);
-      renderRaces(filtered);
-    });
-  }
-
-=======
   await fetchDrivers();
   await fetchTeams();
 
@@ -184,6 +131,5 @@ async function loadHighlights() {
   });
 
   // Load highlights after races
->>>>>>> 823bfab (created driver and races tab)
   await loadHighlights();
 })();
