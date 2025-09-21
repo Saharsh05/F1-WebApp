@@ -1,6 +1,3 @@
- drivers.js
-let teamsMap = new Map();
-
 // --- Backend API base ---
 const API_BASE = "http://localhost:8787";
 
@@ -8,18 +5,24 @@ const API_BASE = "http://localhost:8787";
 async function fetchDrivers() {
   try {
     const res = await fetch(`${API_BASE}/v1/drivers`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const result = await res.json();
     return result.data || [];
   } catch (err) {
     console.error("Failed to fetch drivers:", err);
-    return [];
+    return []; // Return empty array so rendering doesn't break
   }
 }
 
 // --- Render drivers ---
 function renderDrivers(drivers) {
   const container = document.getElementById("drivers-list");
-  container.innerHTML = "";
+  if (!container) {
+    console.error("Container #drivers-list not found in DOM");
+    return;
+  }
+
+  container.innerHTML = ""; // Clear previous content
 
   if (!drivers.length) {
     container.innerHTML = "<p>No drivers available.</p>";
@@ -30,18 +33,16 @@ function renderDrivers(drivers) {
     const card = document.createElement("div");
     card.className = "driver-card";
     card.innerHTML = `
-      <h4>${d.driver_name}</h4>
-      <p>Number: ${d.driver_number}</p>
-      <p>Team: ${d.driver_team || "Unknown Team"}</p>
+      <h4>${d.driver_name || "Unknown"}</h4>
+      <p>Number: ${d.driver_number ?? "N/A"}</p>
+      <p>Team: ${d.driver_team ?? "Unknown Team"}</p>
     `;
     container.appendChild(card);
   });
 }
 
-
 // --- Page load ---
 (async () => {
-  await fetchTeams();
   const drivers = await fetchDrivers();
   renderDrivers(drivers);
-})(); 
+})();
