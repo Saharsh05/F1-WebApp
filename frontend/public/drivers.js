@@ -1,3 +1,18 @@
+console.log("Script loading");
+
+const button = document.getElementById("fetch-btn");
+  if (button) {
+  console.log("found button!");
+  button.addEventListener("click", async () => {
+    const drivers = await fetchDrivers();
+    console.log("fetch-btn:", data);
+    // If you want to display them on the page instead of only console.log:
+    // renderDrivers(drivers);
+  });
+  } else {
+ console.log("Button not found?! - maybe DOM not fully loaded???");
+   }
+
 // --- Backend API base ---
 const API_BASE = "http://localhost:8787";
 
