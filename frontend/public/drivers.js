@@ -12,6 +12,9 @@ if (button) {
   console.log("Button not found?! - maybe DOM not fully loaded???");
 }
 
+// drivers.js
+let teamsMap = new Map();
+
 // --- Backend API base ---
 const API_BASE = "http://localhost:8787";
 
@@ -26,6 +29,29 @@ async function fetchDrivers() {
   } catch (err) {
     console.error("Failed to fetch drivers:", err);
     return []; // return empty array on error
+
+// --- Fetch teams (for driver info) ---
+async function fetchTeams() {
+  try {
+    const res = await fetch(`${API_BASE}/v1/teams`);
+    const result = await res.json();
+    (result.data || []).forEach(t => {
+      teamsMap.set(t.id, t.team_name);
+    });
+  } catch (err) {
+    console.error("Failed to fetch teams:", err);
+  }
+}
+
+// --- Fetch drivers ---
+async function fetchDrivers() {
+  try {
+    const res = await fetch(`${API_BASE}/v1/drivers`);
+    const result = await res.json();
+    return result.data || [];
+  } catch (err) {
+    console.error("Failed to fetch drivers:", err);
+    return [];
   }
 }
 
@@ -37,7 +63,7 @@ function renderDrivers(drivers) {
     return;
   }
 
-  container.innerHTML = ""; // Clear previous content
+  container.innerHTML = "";
 
   if (!drivers.length) {
     container.innerHTML = "<p>No drivers available.</p>";
@@ -45,6 +71,7 @@ function renderDrivers(drivers) {
   }
 
   drivers.forEach(d => {
+
     const card = document.createElement("div");
     card.className = "driver-card";
     card.innerHTML = `
@@ -55,3 +82,28 @@ function renderDrivers(drivers) {
     container.appendChild(card);
   });
 }
+    const teamName = teamsMap.get(d.team_id) || "Unknown Team";
+
+const container = document.querySelector(".drivers-grid");
+    container.innerHTML = "";
+    drivers.forEach(d => {
+    const card = document.createElement("div");
+  card.className = "driver-card";
+  card.innerHTML = `
+    <h4>${d.driver_name}</h4>
+    <p>Number: ${d.driver_number}</p>
+    <p>Team: ${d.driver_team}</p>
+  `;
+  container.appendChild(card);
+});
+
+  };
+}
+
+// --- Page load ---
+(async () => {
+  await fetchTeams();
+  const drivers = await fetchDrivers();
+  renderDrivers(drivers);
+})();
+

@@ -1,8 +1,5 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-let driversMap = new Map();
-let teamsMap = new Map();
-
 // --- Supabase setup for highlights ---
 const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2YXJ6Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ'; // frontend anon key
@@ -10,13 +7,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Supabase setup for highlights ---
 const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2YXJ6Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
-    const res = await fetch("/v1/drivers");
+    const res = await fetch(`${API_BASE}/v1/drivers`);
     const result = await res.json();
     console.log("Fetched drivers:", result);
 
@@ -31,7 +28,7 @@ async function fetchDrivers() {
 // --- Fetch teams ---
 async function fetchTeams() {
   try {
-    const res = await fetch("/v1/teams");
+    const res = await fetch(`${API_BASE}/v1/teams`);
     const result = await res.json();
     console.log("Fetched teams:", result);
 
@@ -75,17 +72,14 @@ function renderRaces(races) {
   }
 
   races.forEach(r => {
-    const driverName = driversMap.get(r.first_place_driver) || "Unknown Driver";
-    const teamName = teamsMap.get(r.first_place_team) || "Unknown Team";
-
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
       <div class="card-body">
         <h3>${r.race_type || "Race"} — ${r.season || ""}</h3>
         <p>Date: ${r.date ? new Date(r.date).toLocaleDateString() : "TBA"}</p>
-        <p><strong>Winner:</strong> ${driverName}</p>
-        <p><strong>Team:</strong> ${teamName}</p>
+        <p><strong>Winner ID:</strong> ${r.first_place_driver || "Unknown"}</p>
+        <p><strong>Team ID:</strong> ${r.first_place_team || "Unknown"}</p>
       </div>
     `;
     container.appendChild(card);
@@ -114,7 +108,7 @@ async function loadHighlights() {
 
   data.forEach(item => {
     const videoId = item.youtube_video_id;
-    const raceName = item.races.meeting_key; // replace with proper race name if available
+    const raceName = item.races.meeting_key;
     const season = item.races.season;
 
     const card = document.createElement('div');
@@ -133,17 +127,17 @@ async function loadHighlights() {
 
 // --- Page load ---
 (async () => {
-  await fetchDrivers();
-  await fetchTeams();
-
   const races = await fetchRaces();
   renderRaces(races);
 
-  document.getElementById("filter-season").addEventListener("change", async (e) => {
-    const season = e.target.value;
-    const filtered = await fetchRaces(season);
-    renderRaces(filtered);
-  });
+  const seasonFilter = document.getElementById("filter-season");
+  if (seasonFilter) {
+    seasonFilter.addEventListener("change", async (e) => {
+      const season = e.target.value;
+      const filtered = await fetchRaces(season);
+      renderRaces(filtered);
+    });
+  }
 
   // Load highlights after races
   await loadHighlights();
