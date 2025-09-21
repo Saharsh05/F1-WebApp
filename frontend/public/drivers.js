@@ -4,16 +4,14 @@ const API_BASE = "http://localhost:8787";
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
-    const res = await fetch(`http://localhost:8787/v1/drivers`);
+    const res = await fetch(`${API_BASE}/v1/drivers?q=hamilton&limit=5`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const result = await res.json();
-    return result.data || [];
+    const data = await res.json();
+    console.log("Fetched drivers:", data);
   } catch (err) {
     console.error("Failed to fetch drivers:", err);
-    return []; // Return empty array so rendering doesn't break
   }
 }
-
 // --- Render drivers ---
 function renderDrivers(drivers) {
   const container = document.getElementById("drivers-list");
@@ -39,10 +37,14 @@ function renderDrivers(drivers) {
     `;
     container.appendChild(card);
   });
+
+  document.getElementById("fetch-btn")?.addEventListener("click", async () => {
+    const drivers = await fetchDrivers();
+    console.log("fetch-btn:", data);
+    // If you want to display them on the page instead of only console.log:
+    // renderDrivers(drivers);
+  });
+  
 }
 
-// --- Page load ---
-(async () => {
-  const drivers = await fetchDrivers();
-  renderDrivers(drivers);
-})();
+
