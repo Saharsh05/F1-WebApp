@@ -4,7 +4,7 @@ const API_BASE = "http://localhost:8787";
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
-    const res = await fetch(`${API_BASE}/v1/drivers`);
+    const res = await fetch(`http://localhost:8787/v1/drivers`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const result = await res.json();
     return result.data || [];
