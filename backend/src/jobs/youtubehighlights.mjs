@@ -174,7 +174,7 @@ async function main (){
         
         const { error: upsertErr } = await supabase
             .from("race_highlights")
-            .upsert({ session_key: s.session_key, youtube_video_id: videoId }, { onConflict: "session_key" });
+            .upsert({ session_key: r.session_key, youtube_video_id: videoId }, { onConflict: "session_key" });
 
         if (upsertErr) { console.error(upsertErr); failed++; }
         else { inserted++; console.log(`Saved ${queries[0]} -> ${videoId}`); }

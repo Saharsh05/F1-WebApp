@@ -1,27 +1,22 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+console.log("Races script loaded");
 
-// --- Supabase setup for highlights ---
-const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2YXJ6Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ'; // frontend anon key
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// --- Supabase setup for highlights ---
-const SUPABASE_URL = 'https://gvlhtpyfjrstlvarzchl.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bGh0cHlmanJzdGx2Y2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MjM0MTgsImV4cCI6MjA3MDk5OTQxOH0.Pco8ziMMBl78eShonOcjZIl4mxCeMANiH42XmWHdNCQ';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const API_BASE = "http://localhost:8787";
+let driversMap = new Map();
+let teamsMap = new Map();
 
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
     const res = await fetch(`${API_BASE}/v1/drivers`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const result = await res.json();
-    console.log("Fetched drivers:", result);
-
     (result.data || []).forEach(d => {
       driversMap.set(d.driver_id, d.driver_name);
     });
+    return result.data || [];
   } catch (err) {
     console.error("Failed to fetch drivers:", err);
+    return [];
   }
 }
 
@@ -29,26 +24,29 @@ async function fetchDrivers() {
 async function fetchTeams() {
   try {
     const res = await fetch(`${API_BASE}/v1/teams`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const result = await res.json();
-    console.log("Fetched teams:", result);
-
     (result.data || []).forEach(t => {
       teamsMap.set(t.id, t.team_name);
     });
+    return result.data || [];
   } catch (err) {
     console.error("Failed to fetch teams:", err);
+    return [];
   }
 }
 
 // --- Fetch races ---
 async function fetchRaces(season = "") {
-  let url = "/v1/races";
-  if (season) url += `?season=${encodeURIComponent(season)}`;
+  let url = `${API_BASE}/v1/races`;
+  if (season && season !== "All Seasons") {
+    url += `?season=${encodeURIComponent(season)}`;
+  }
 
   try {
     const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const result = await res.json();
-    console.log("Fetched races:", result);
     return result.data || [];
   } catch (err) {
     console.error("Failed to fetch races:", err);
@@ -65,68 +63,34 @@ function renderRaces(races) {
   }
 
   container.innerHTML = "";
-
   if (!races.length) {
     container.innerHTML = "<p>No races available.</p>";
     return;
   }
 
   races.forEach(r => {
+    const driverName = driversMap.get(r.first_place_driver) || "Unknown Driver";
+    const teamName = teamsMap.get(r.first_place_team) || "Unknown Team";
+
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
       <div class="card-body">
         <h3>${r.race_type || "Race"} — ${r.season || ""}</h3>
         <p>Date: ${r.date ? new Date(r.date).toLocaleDateString() : "TBA"}</p>
-        <p><strong>Winner ID:</strong> ${r.first_place_driver || "Unknown"}</p>
-        <p><strong>Team ID:</strong> ${r.first_place_team || "Unknown"}</p>
+        <p><strong>Winner:</strong> ${driverName}</p>
+        <p><strong>Team:</strong> ${teamName}</p>
       </div>
     `;
     container.appendChild(card);
   });
 }
 
-// --- Fetch and render highlights ---
-async function loadHighlights() {
-  const { data, error } = await supabase
-    .from('race_highlights')
-    .select(`
-      session_key,
-      youtube_video_id,
-      races!inner(meeting_key, season)
-    `)
-    .order('session_key', { ascending: false });
-
-  if (error) {
-    console.error("Failed to fetch highlights:", error);
-    return;
-  }
-
-  const grid = document.getElementById('highlights-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
-
-  data.forEach(item => {
-    const videoId = item.youtube_video_id;
-    const raceName = item.races.meeting_key;
-    const season = item.races.season;
-
-    const card = document.createElement('div');
-    card.className = 'highlight-card';
-    card.innerHTML = `
-      <h3>${raceName} - ${season}</h3>
-      <iframe 
-        src="https://www.youtube.com/embed/${videoId}" 
-        frameborder="0" 
-        allowfullscreen
-      ></iframe>
-    `;
-    grid.appendChild(card);
-  });
-}
-
 // --- Page load ---
 (async () => {
+  await fetchDrivers();
+  await fetchTeams();
+
   const races = await fetchRaces();
   renderRaces(races);
 
@@ -138,7 +102,4 @@ async function loadHighlights() {
       renderRaces(filtered);
     });
   }
-
-  // Load highlights after races
-  await loadHighlights();
 })();

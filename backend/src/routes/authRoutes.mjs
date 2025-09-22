@@ -22,7 +22,8 @@ router.post("/login", async (req, res) => {
   const { data, error } = await supabaseAnon.auth.signInWithPassword({ email, password });
   if (error) return res.status(401).json({ error });
   setAuthCookies(res, data.session);
-  res.json({ user: data.user });
+  // Return user AND session for frontend
+  res.json({ user: data.user, session: data.session });
 });
 
 // Refresh: rotate tokens using refresh_token cookie

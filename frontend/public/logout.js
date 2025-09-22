@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
         alert("Logged out!");
         // Optionally redirect to login page
-        window.location.href = "login.html";
+        //window.location.href = "login.html";
       } catch (err) {
         console.error(err);
         alert("Error logging out");

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://localhost:8787; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
   <title>My Dashboard — F1 Fan Hub</title>
   <link rel="stylesheet" href="dashboard.css">
 </head>
@@ -11,22 +12,18 @@
   <!-- Top Navigation -->
   <header class="site-header">
     <nav class="nav container">
-      <a class="brand" href="index.html">
-        <span class="brand-text">F1 Fan Hub</span>
-      </a>
+      <a class="brand" href="index.html"><span class="brand-text">F1 Fan Hub</span></a>
       <ul class="nav-links">
         <li><a href="drivers.html">Drivers</a></li>
         <li><a href="teams.html">Teams</a></li>
         <li><a href="races.html">Races</a></li>
-        <li><a href="dashboard.html" class="active"> My Dashboard</a></li>
-        <li><button id="logout-btn" class="btn" style="display: none;">Logout</button></li>
+        <li><a href="dashboard.html" class="active">My Dashboard</a></li>
       </ul>
     </nav>
   </header>
 
   <!-- Main Content -->
-  <main class="content container">
-
+  <main class="content container" style="display:none;">
     <h1 class="page-title">My Dashboard</h1>
 
     <!-- Favourite Drivers -->
@@ -58,7 +55,6 @@
         </select>
         <button type="submit" class="fav-team-btn">Save</button>
         <div id="teams-message"></div>
-        
       </form>
     </section>
 
@@ -74,24 +70,19 @@
           <option value="4">Lando Norris</option>
         </select>
         <input type="number" id="driver-rating" min="1" max="10" placeholder="Rating (1-10)" required>
-        <label for="driver-comment">Comment (optional):</label>
         <textarea id="driver-comment" placeholder="Write a comment..." rows="3"></textarea>
         <button type="submit" class="rating-btn">Submit Rating</button>
         <div id="rating-message"></div>
-        <div id="review-feedback"></div>
-
       </form>
     </section>
 
-    <div class="reviews-section">
-        <h2>Your Reviews</h2>
-        <ul id="reviews-list"></ul>
-      </div>
-      
-
+    <!-- User Reviews -->
+    <section class="reviews-section">
+      <h2>Your Reviews</h2>
+      <ul id="reviews-list"></ul>
+    </section>
   </main>
-  <script type="module" src="dashboard.js"></script>
-  <script type="module" src="logout.js"></script>
 
+  <script type="module" src="dashboard.js"></script>
 </body>
 </html>

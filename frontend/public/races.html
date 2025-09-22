@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>F1 Fan Hub — Races</title>
   <link rel="stylesheet" href="races.css" />
-  <script type="module" src="races.js"></script>
 </head>
 <body class="races">
   <!-- Header / Nav -->
@@ -19,15 +18,14 @@
       <ul class="nav-links">
         <li><a href="drivers.html">Drivers</a></li>
         <li><a href="races.html" class="active">Races</a></li>
-        <li><a href="#">Teams</a></li>
-        <li><a href="#">My Dashboard</a></li>
-        <li><a href="login.html" class="login-btn">Login</a></li>
+        <li><a href="teams.html">Teams</a></li>
+        <li><a href="dashboard.html">My Dashboard</a></li>
       </ul>
     </nav>
   </header>
 
   <main class="container section">
-    <!-- Featured Video -->
+    <!-- Featured Race Video -->
     <section class="featured-video">
       <iframe id="featured-video" src="" frameborder="0" allowfullscreen></iframe>
       <div class="video-overlay">
@@ -49,23 +47,18 @@
       </select>
     </div>
 
-    <!-- Race list -->
+    <!-- Race list container -->
     <div id="races-list" class="grid cards race-list">
-      <!-- JS injects race cards -->
+      <p id="races-placeholder">Loading races...</p>
     </div>
 
-    <!-- Race highlights -->
-    <section class="race-highlights">
-      <h2>Race Highlights</h2>
-      <div class="highlights-grid" id="highlights-grid" aria-label="Race highlights videos">
-        <!-- JS injects highlights -->
-      </div>
-    </section>
+  
   </main>
 
   <footer class="site-footer">
     <div class="container"><small>©2025 F1 Fan Hub</small></div>
   </footer>
+
 
   <script type="module" src="races.js"></script>
 </body>

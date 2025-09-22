@@ -3,6 +3,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
+//importing frontend path
+//import path from "path";
+
 
 import authRoutes from "../src/routes/authRoutes.mjs";
 import { requireAuth } from "../src/auth.mjs";
@@ -20,6 +23,13 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+//Serve frontend
+//app.use(express.static(path.join(process.cwd(), "public")));
+
+// Optional catch-all for SPA routing
+//app.get("/", (_req, res) => {
+  //res.sendFile(path.join(process.cwd(), "public", "index.html"));
+//});
 
 //Public
 app.get("/health" , (request, result) => result.json({ok:true}));
@@ -31,6 +41,16 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 const sendError = (result, code, message, detail) =>
     result.status(code).json({error: { code, message, detail }});
 
+  //added endpoint for authentication
+  app.get("/v1/me", requireAuth, async (req, res) => {
+    res.json({
+      user: {
+        id: req.user.id,
+        email: req.user.email,
+      },
+    });
+  });
+    
 app.get("/v1/races", async (request, result) => {
     const { race_type, limit = 50, offset = 0} = request.query;
     const season = request.query.season ?? request.query.year;

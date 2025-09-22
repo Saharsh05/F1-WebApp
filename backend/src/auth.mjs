@@ -24,10 +24,11 @@ export function setAuthCookies(res, session) {
 
   const common = {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: false,   // keep false for localhost HTTP
+    sameSite: "none",
     path: "/",
   };
+  
   // Access tokens are short-lived; Refresh lasts longer
   res.cookie(AT, session.access_token, { ...common, maxAge: 60 * 60 * 1000 });         // ~1h
   res.cookie(RT, session.refresh_token, { ...common, maxAge: 7 * 24 * 60 * 60 * 1000 });// ~7d

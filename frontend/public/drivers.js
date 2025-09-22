@@ -1,36 +1,25 @@
 console.log("Script loading");
 
-const button = document.getElementById("fetch-btn");
-if (button) {
-  console.log("found button!");
-  button.addEventListener("click", async () => {
-    const drivers = await fetchDrivers();
-    console.log("fetch-btn:", drivers);
-    renderDrivers(drivers); // <--- now it actually shows on the page
-  });
-} else {
-  console.log("Button not found?! - maybe DOM not fully loaded???");
-}
-
-// drivers.js
-let teamsMap = new Map();
-
 // --- Backend API base ---
 const API_BASE = "http://localhost:8787";
+
+let teamsMap = new Map();
 
 // --- Fetch drivers ---
 async function fetchDrivers() {
   try {
-    const res = await fetch(`${API_BASE}/v1/drivers?q=hamilton&limit=50`);
+    const res = await fetch(`${API_BASE}/v1/drivers?limit=50`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
     console.log("Fetched drivers:", data);
-    return data.data || [];   // <--- return the array of drivers
+    return data.data || [];   // return the array of drivers
   } catch (err) {
     console.error("Failed to fetch drivers:", err);
     return []; // return empty array on error
+  }
+}
 
-// --- Fetch teams (for driver info) ---
+// --- Fetch teams ---
 async function fetchTeams() {
   try {
     const res = await fetch(`${API_BASE}/v1/teams`);
@@ -40,18 +29,6 @@ async function fetchTeams() {
     });
   } catch (err) {
     console.error("Failed to fetch teams:", err);
-  }
-}
-
-// --- Fetch drivers ---
-async function fetchDrivers() {
-  try {
-    const res = await fetch(`${API_BASE}/v1/drivers`);
-    const result = await res.json();
-    return result.data || [];
-  } catch (err) {
-    console.error("Failed to fetch drivers:", err);
-    return [];
   }
 }
 
@@ -71,33 +48,29 @@ function renderDrivers(drivers) {
   }
 
   drivers.forEach(d => {
-
+    const teamName = teamsMap.get(d.team_id) || d.driver_team || "Unknown Team";
     const card = document.createElement("div");
     card.className = "driver-card";
     card.innerHTML = `
       <h4>${d.driver_name || "Unknown"}</h4>
       <p>Number: ${d.driver_number ?? "N/A"}</p>
-      <p>Team: ${d.driver_team ?? "Unknown Team"}</p>
+      <p>Team: ${teamName}</p>
     `;
     container.appendChild(card);
   });
 }
-    const teamName = teamsMap.get(d.team_id) || "Unknown Team";
 
-const container = document.querySelector(".drivers-grid");
-    container.innerHTML = "";
-    drivers.forEach(d => {
-    const card = document.createElement("div");
-  card.className = "driver-card";
-  card.innerHTML = `
-    <h4>${d.driver_name}</h4>
-    <p>Number: ${d.driver_number}</p>
-    <p>Team: ${d.driver_team}</p>
-  `;
-  container.appendChild(card);
-});
-
-  };
+// --- Button handler ---
+const button = document.getElementById("fetch-btn");
+if (button) {
+  console.log("found button!");
+  button.addEventListener("click", async () => {
+    const drivers = await fetchDrivers();
+    console.log("fetch-btn:", drivers);
+    renderDrivers(drivers);
+  });
+} else {
+  console.log("Button not found?! - maybe DOM not fully loaded???");
 }
 
 // --- Page load ---
@@ -106,4 +79,3 @@ const container = document.querySelector(".drivers-grid");
   const drivers = await fetchDrivers();
   renderDrivers(drivers);
 })();
-
