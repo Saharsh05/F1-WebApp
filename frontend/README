@@ -1,0 +1,60 @@
+# F1 Fan Hub — Frontend
+
+A simple frontend for F1 fans to track favourite drivers and teams, rate drivers, and view user reviews.
+
+---
+
+## Folder Structure
+frontend/
+│
+├─ public/ # Public assets (images, icons, etc.)
+├─ css/
+│ ├─ dashboard.css
+│ └─ login.css
+├─ js/
+│ ├─ login.js # Handles login form submission
+│ ├─ dashboard.js # Handles dashboard interactions (ratings, favourites, reviews)
+│ ├─ logout.js # Handles logout functionality
+│ └─ nav.js # Navbar auth checks (can cause logout if misconfigured)
+├─ index.html
+├─ login.html
+├─ dashboard.html
+└─ README.md
+
+---
+
+## Quickstart
+
+1. Clone the repo:
+```bash
+
+git clone <repo-url>
+cd frontend
+
+Start a local server (e.g., live-server or VS Code Live Server).
+
+Make sure your backend is running at http://localhost:8787.
+
+Open index.html in your browser.
+
+##Features
+
+User authentication (login, session cookies)
+
+Dashboard:
+
+Rate drivers (1–10 scale)
+
+Mark favourite drivers and teams
+
+##Known Issues
+
+Dashboard sections may appear blank if not authenticated. Users are redirected to login.html.
+
+Session persistence relies on cookies; if cookies are cleared, login is lost.
+
+Navbar checks in nav.js can log users out unintentionally if misconfigured.
+
+##Recommendations
+Ensure you clear your cookie browser as this may affect the login process
+To logout, click the f1 hub icon 
